@@ -30,6 +30,94 @@ char *get_input_line(void)
 }
 
 /**
+ * tokenize_string - Splits a string in array of components ("tokens").
+ *   Goes from "I get string" to "Command ended".
+ * @string: string to split in array of tokens.
+ * @tokens: array to fill in with tokens.
+ * Return: pointer to array of tokens or NULL if failure / no tokens.
+ *
+ * NOTES:
+ * - I consider this function as a "reader" of input
+ *   so I pass a constant pointer to stress it.
+ * Initially returned (0 on success, >0 on fail) but required
+ *   a triple pointer in prototype.
+ *  => Better to create and return the array directly.
+ */
+char **tokenize_string(const char *string, char **tokens)
+{
+	const char *delimiters = " \n\t"; /* How to split. */
+	char *string_copy = NULL;         /* Needed because strtok alters it. */
+	size_t tokens_count = 0;          /* Computed with a "first pass".    */
+	char *token = NULL;       /* Revolving variable for each token found. */
+	size_t i = 0;   /* Iterator to fill up tokens array if we found some. */
+
+	/* @fixme rename as "tokenized_string "*/
+	string_copy = strdup(string);
+	if (!string_copy)
+	{
+		/* @fixme me a call to "error_logger" or whatever name I give it */
+		/* with just a shortcode like ALLOC_FAILED or something + context. */
+		/* Ideally return would be the same code as long as >0. */
+		return (NULL);
+	}
+	/* strtok is this weird beast which needs initializing outside loop. */
+	token = strtok(string_copy, delimiters);
+	if (!token)
+	{
+		tokens_count = 1;
+		while (token)
+		{
+			token = strtok(NULL, delimiters);
+			tokens_count++;
+		}
+	}
+	if (tokens_count == 0)
+		return (NULL); /* @fixme Should we consider this a failure or valid case? */
+		tokens = malloc(sizeof(char *) * tokens_count);
+	if (!tokens)
+	{
+		free(string_copy); /* @fixme same note as above. */
+		return (NULL);
+	}
+	/* Re-initializing the copy as the EOL would break the re-parsing. */
+	free(string_copy);
+	string_copy = strdup(string);
+	if (!string_copy) /* @fixme same as above*/
+		return (NULL);
+	tokens[i] = strtok(string_copy, delimiters);
+	for (i += 1; i < tokens_count; i++)
+		tokens[i] = strtok(NULL, delimiters);
+	/* Do NOT free string_copy otherwise all for MOOT. */
+	/* Just put its pointer to NULL to stress ownership changed? */
+	/* Also means name is bad. Should be "tokenized_copy" or something. */
+	return (tokens);
+}
+
+/**
+ * process_input - Subprocessor.
+ *   Goes from "I get string" to "Command ended".
+ * @received_input: input retrieved in main with get_input_line.
+ * Return: 0 on success, error code on failure.
+ * NOTES:
+ * - I consider this function as a "reader" of input
+ *   so I pass a constant pointer to stress it.
+ * - As it delegates everything to subpointers it does not create
+ *     duplicates of the input, just pass its pointer by value.
+ */
+int process_input(const char *received_input)
+{
+	char **tokens = NULL; /* Placeholder for return of tokenize_string. */
+
+	/* Try and get an array of tokens. */
+	tokens = tokenize_string(received_input, tokens);
+	/* IF TOKENS NON NULL get PATH and send to SEARCH */
+
+	/* IF COMMAND FOUND EXECUTE */
+
+	return (0);
+}
+
+/**
  * main - Main entry point for simple shell.
  * @argc: count of provided arguments (shell itself counted)
  * @argv: array of strings representing line cut by spaces.
@@ -72,6 +160,7 @@ int main(int argc, char **argv, char **envp)
 			/* Try and execute command. Handle errors of all kinds. */
 			printf("Hey hey! I received the input properly!! Here it is! \n");
 			printf("%s", received_input);
+			process_input(received_input);
 			/* Finally free everything main "owns". */
 			/* Free received_input? Or only after loop ended? */
 		}
