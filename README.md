@@ -81,22 +81,12 @@ FIXME
 
 #### Process flow
 
----
-config:
-  theme: base
-  themeVariables:
-    primaryColor: '#667eea'
-    primaryTextColor: '#fff'
-    primaryBorderColor: '#4c51bf'
-    lineColor: '#667eea'
-    secondaryColor: '#43e97b'
-    tertiaryColor: '#f093fb'
----
+```mermaid
 flowchart TB
     START(["🐚 SIMPLE SHELL - Démarrage"]) --> INIT["Initialiser variables<br>line, args, env"]
     INIT --> LOOP{"🔄 Boucle Principale<br>while 1"}
     LOOP --> CHECK_TTY{"Mode interactif ?<br>isatty STDIN"}
-    CHECK_TTY -- OUI --> PRINT_PROMPT@{ label: "Afficher prompt<br>'$ ' ou '#cisfun$ '" }
+    CHECK_TTY -- OUI --> PRINT_PROMPT["Afficher prompt<br>'$ ' ou '#cisfun$ '"]
     CHECK_TTY -- NON --> NO_PROMPT["Pas de prompt"]
     PRINT_PROMPT --> READ["Lire entrée utilisateur<br>getline"]
     NO_PROMPT --> READ
@@ -109,18 +99,18 @@ flowchart TB
     CHECK_EMPTY -- NON --> CHECK_BUILTIN{"Built-in ?<br>exit ou env"}
     CHECK_BUILTIN -- exit --> BUILTIN_EXIT["Built-in: exit<br>Quitter le shell"]
     BUILTIN_EXIT --> FREE_EXIT
-    CHECK_BUILTIN -- env --> BUILTIN_ENV@{ label: "Built-in: env<br>Afficher variables<br>d'environnement" }
+    CHECK_BUILTIN -- env --> BUILTIN_ENV["Built-in: env<br>Afficher variables<br>d'environnement"]
     BUILTIN_ENV --> FREE_LOOP
     CHECK_BUILTIN -- NON --> FIND_PATH["Chercher commande<br>Si chemin absolu → utiliser tel quel<br>Sinon → chercher dans PATH<br>getenv PATH + strtok"]
     FIND_PATH --> CHECK_FOUND{"Commande<br>trouvée ?"}
-    CHECK_FOUND -- NON --> ERROR_NOTFOUND@{ label: "Afficher erreur<br>'./hsh: 1: cmd: not found'" }
+    CHECK_FOUND -- NON --> ERROR_NOTFOUND["Afficher erreur<br>'./hsh: 1: cmd: not found'"]
     ERROR_NOTFOUND --> FREE_LOOP
     CHECK_FOUND -- OUI --> CHECK_EXECUTABLE{"Fichier<br>exécutable ?<br>stat ou access"}
     CHECK_EXECUTABLE -- NON --> ERROR_NOTFOUND
     CHECK_EXECUTABLE -- OUI --> FORK["Créer processus enfant<br>fork"]
     FORK --> CHECK_FORK{"fork<br>retourne ?"}
     CHECK_FORK -- "pid == 0" --> CHILD["👶 PROCESSUS ENFANT<br>pid == 0"]
-    CHECK_FORK -- pid > 0 --> PARENT["👨 PROCESSUS PARENT<br>pid &gt; 0"]
+    CHECK_FORK -- pid > 0 --> PARENT["👨 PROCESSUS PARENT<br>pid > 0"]
     CHECK_FORK -- "pid == -1" --> FORK_ERROR["Erreur fork<br>perror"]
     FORK_ERROR --> FREE_LOOP
     CHILD --> EXECVE["Remplacer par commande<br>execve pathname, args, env"]
@@ -128,45 +118,7 @@ flowchart TB
     PARENT --> WAIT["Attendre fin enfant<br>wait ou waitpid"]
     WAIT --> FREE_LOOP
     FREE_LOOP --> LOOP
-
-    PRINT_PROMPT@{ shape: rect}
-    BUILTIN_ENV@{ shape: rect}
-    ERROR_NOTFOUND@{ shape: rect}
-     START:::startEnd
-     INIT:::process
-     LOOP:::loop
-     CHECK_TTY:::loop
-     PRINT_PROMPT:::process
-     NO_PROMPT:::process
-     READ:::process
-     CHECK_EOF:::loop
-     FREE_EXIT:::process
-     END:::startEnd
-     PARSE:::process
-     CHECK_EMPTY:::loop
-     CHECK_BUILTIN:::loop
-     BUILTIN_EXIT:::builtin
-     BUILTIN_ENV:::builtin
-     FIND_PATH:::process
-     CHECK_FOUND:::loop
-     ERROR_NOTFOUND:::error
-     CHECK_EXECUTABLE:::loop
-     CHECK_FORK:::loop
-     CHILD:::child
-     PARENT:::parent
-     FORK_ERROR:::error
-     EXECVE:::child
-     EXECVE_ERROR:::error
-     WAIT:::parent
-     FREE_LOOP:::process
-    classDef startEnd fill:#667eea,stroke:#4c51bf,stroke-width:3px,color:#fff
-    classDef process fill:#43e97b,stroke:#38d9a9,stroke-width:2px,color:#fff
-    classDef decision fill:#4facfe,stroke:#00c9ff,stroke-width:2px,color:#fff
-    classDef builtin fill:#fa709a,stroke:#f77062,stroke-width:2px,color:#fff
-    classDef error fill:#ff6b6b,stroke:#ee5a6f,stroke-width:2px,color:#fff
-    classDef child fill:#30cfd0,stroke:#330867,stroke-width:2px,color:#fff
-    classDef parent fill:#f093fb,stroke:#f5576c,stroke-width:2px,color:#fff
-    classDef loop fill:#feca57,stroke:#ff9ff3,stroke-width:3px,color:#000
+```
 
 #### Notes on architecture choices
 FIXME
@@ -232,6 +184,3 @@ FIXME
 This program has been developed by...
 * Soufiane 	Filali
 * Laurent Lacôte
-````
-
----
