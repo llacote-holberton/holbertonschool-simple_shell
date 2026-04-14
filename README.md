@@ -11,11 +11,6 @@ Simple Shell is a simple command line interface program allowing user to send si
 It supports the most essential features a user could expect: support of user $PATH to find programs, propagation of command arguments,
  error handling, interactive and non-interactive mode.
 
-### Copyright
-This program has been developed by...
-* Soufiane 	Filali
-* Laurent Lacôte
-
 FIXME (license)
 
 ## How to install and run
@@ -111,3 +106,8 @@ FIXME
     <img src="https://img.shields.io/badge/VIM-019733?logo=vim&logoColor=white&style=for-the-badge" alt="VIM badge">
     <img src="https://img.shields.io/badge/KDE-blue?logo=kde&logoColor=white&style=for-the-badge" alt="KDE badge">
 </p>
+
+### Copyright
+This program has been developed by...
+* Soufiane 	Filali
+* Laurent Lacôte
