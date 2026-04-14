@@ -1,0 +1,47 @@
+# CUSTOM (if need be)
+# Core dumps (debug / GDB)
+core
+core.*
+
+# Temporary files from text editors
+*~
+
+# INSPIRED FROM GITHUB PROVIDED LIST
+# cf https://github.com/github/gitignore/blob/main/C.gitignore
+
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Executables
+*.out
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+
+# debug information files
+*.dwo
