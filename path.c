@@ -1,68 +1,103 @@
 #include "shell.h"
-#include <string.h>
 
 /**
- * get_path - Trouve le chemin d'une commande dans PATH
- * @command: La commande à chercher
+ * check_direct_path - Vérifie si la commande est un chemin direct
+ * @command: La commande à vérifier
  *
- * Return: Chemin complet ou NULL
+ * Return: Copie du chemin si valide, NULL sinon
  */
-char *get_path(char *command)
+char *check_direct_path(char *command)
 {
-	char *path_env, *path_copy, *dir, *full_path;
 	struct stat st;
-	int cmd_len, dir_len;
 
-	/* Si c'est déjà un chemin absolu ou relatif */
 	if (command[0] == '/' || command[0] == '.')
 	{
 		if (stat(command, &st) == 0)
 			return (strdup(command));
-		return (NULL);
 	}
+	return (NULL);
+}
 
-	/* Récupérer PATH */
-	path_env = getenv("PATH");
-	if (!path_env)
+/**
+ * build_full_path - Construit le chemin complet
+ * @dir: Le dossier
+ * @command: La commande
+ *
+ * Return: Chemin complet ou NULL
+ */
+char *build_full_path(char *dir, char *command)
+{
+	char *full_path;
+	int dir_len, cmd_len;
+
+	dir_len = strlen(dir);
+	cmd_len = strlen(command);
+
+	full_path = malloc(dir_len + cmd_len + 2);
+	if (!full_path)
 		return (NULL);
 
-	/* Dupliquer PATH */
-	path_copy = strdup(path_env);
-	if (!path_copy)
-		return (NULL);
+	strcpy(full_path, dir);
+	strcat(full_path, "/");
+	strcat(full_path, command);
 
-	/* Découper par ":" */
+	return (full_path);
+}
+
+/**
+ * search_in_path - Cherche la commande dans PATH
+ * @command: La commande à chercher
+ * @path_copy: Copie du PATH
+ *
+ * Return: Chemin complet ou NULL
+ */
+char *search_in_path(char *command, char *path_copy)
+{
+	char *dir, *full_path;
+	struct stat st;
+
 	dir = strtok(path_copy, ":");
 
 	while (dir)
 	{
-		dir_len = strlen(dir);
-		cmd_len = strlen(command);
-
-		/* Allouer pour : dir + "/" + cmd + "\0" */
-		full_path = malloc(dir_len + cmd_len + 2);
+		full_path = build_full_path(dir, command);
 		if (!full_path)
-		{
-			free(path_copy);
 			return (NULL);
-		}
 
-		/* Construire le chemin */
-		strcpy(full_path, dir);
-		strcat(full_path, "/");
-		strcat(full_path, command);
-
-		/* Vérifier si existe ET si exécutable */ 
 		if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
-		{
-			free(path_copy);
 			return (full_path);
-		}
 
 		free(full_path);
 		dir = strtok(NULL, ":");
 	}
-	
-	free(path_copy);
+
 	return (NULL);
+}
+
+/**
+ * get_cmd_fullpath - Trouve le chemin d'une commande dans PATH
+ * @command: La commande à chercher
+ *
+ * Return: Chemin complet ou NULL
+ */
+char *get_cmd_fullpath(char *command)
+{
+	char *path_env, *path_copy, *result;
+
+	result = check_direct_path(command);
+	if (result)
+		return (result);
+
+	path_env = getenv("PATH");
+	if (!path_env)
+		return (NULL);
+
+	path_copy = strdup(path_env);
+	if (!path_copy)
+		return (NULL);
+
+	result = search_in_path(command, path_copy);
+	free(path_copy);
+
+	return (result);
 }
