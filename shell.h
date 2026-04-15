@@ -12,11 +12,8 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
-/* Prototype de execute_command avec envp */
-void execute_command(char **args, char **envp);
-
 /* === PROTOTYPES - path.c === */
-char *get_path(char *command);
+char *get_cmd_fullpath(char *command, char **envp);
 
 /* === PROTOTYPES - main.c === */
 void free_array(char **array);
