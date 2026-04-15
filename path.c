@@ -36,7 +36,9 @@ static char *check_direct_path(char *command)
 
 	if (command[0] == '/' || (command[0] == '.' && command[1] == '/'))
 	{
-		if (stat(command, &st) == 0 && (st.st_mode & S_IXUSR))
+		if (stat(command, &st) == 0 &&
+		    S_ISREG(st.st_mode) &&
+		    (st.st_mode & S_IXUSR))
 			return (strdup(command));
 	}
 	return (NULL);
