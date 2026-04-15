@@ -48,9 +48,14 @@ int process_input(const char *received_input)
 
 	/* Try and get an array of tokens. */
 	tokens = tokenize_string(received_input, NULL);
+	/* @fixme implement case "tokens empty or NULL" */
+
 	/* IF TOKENS NON NULL get PATH and send to SEARCH */
 
 	/* IF COMMAND FOUND EXECUTE */
+
+	/* Clean up everything */
+	free(tokens);
 
 	/* @temporary */
 	(void)tokens;
