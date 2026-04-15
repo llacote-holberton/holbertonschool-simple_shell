@@ -50,6 +50,9 @@ int process_input(const char *received_input)
 	tokens = tokenize_string(received_input, NULL);
 	/* @fixme implement case "tokens empty or NULL" */
 
+	/* @TEMPORARY */
+	printf("First token is %s", (tokens) ? tokens[0] : "EMPTY ARRAY");
+
 	/* IF TOKENS NON NULL get PATH and send to SEARCH */
 
 	/* IF COMMAND FOUND EXECUTE */
