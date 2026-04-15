@@ -2,7 +2,7 @@
 #define SHELL_H
 
 /* === PROTOTYPES - main.c === */
-int process_input(const char *received_input)
+int process_input(const char *received_input);
 /* @note: put here at least while we develop to allow "unit tests" */
 
 /* === PROTOTYPES - tokenizers.c === */
