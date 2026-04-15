@@ -86,7 +86,10 @@ char **tokenize_string(const char *string, const char *delimiters)
 
 	tokenized_string = strdup(string);
 	if (!tokenized_string) /* @fixme same as above*/
+	{
+		free(tokens);
 		return (NULL);
+	}
 
 	tokens[i] = strtok(tokenized_string, delimiters);
 	for (i += 1; i < tokens_count; i++)
