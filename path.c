@@ -90,7 +90,9 @@ static char *search_in_path(char *command, char *path_copy)
 		if (!full_path)
 			return (NULL);
 
-		if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
+		if (stat(full_path, &st) == 0 &&
+		    S_ISREG(st.st_mode) &&
+		    access(full_path, X_OK) == 0)
 			return (full_path);
 
 		free(full_path);
