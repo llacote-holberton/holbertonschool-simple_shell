@@ -80,7 +80,7 @@ char **tokenize_string(const char *string, const char *delimiters)
 		return (NULL);
 
 	/* @warning DO NOT FORGET the "space" for the mandatory NULL cell! */
-	tokens = malloc(sizeof(char *) * tokens_count + 1);
+	tokens = malloc(sizeof(char *) * (tokens_count + 1));
 	if (!tokens)
 		return (NULL);
 
@@ -92,7 +92,7 @@ char **tokenize_string(const char *string, const char *delimiters)
 	for (i += 1; i < tokens_count; i++)
 		tokens[i] = strtok(NULL, delimiters);
 	/* @warning DO NOT forget the mandatory NULL cell for others to know end. */
-	tokens[i + 1] = NULL;
+	tokens[i] = NULL;
 	/* @warning CANNOT FREE TOKENS, IT WILL BE RESPONSABILITY OF CALLER */
 	return (tokens);
 }
