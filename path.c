@@ -1,6 +1,30 @@
 #include "shell.h"
 
 /**
+ * find_path_in_env - Trouve PATH dans environ
+ * @envp: Variables d'environnement
+ *
+ * Return: Valeur de PATH ou NULL
+ */
+char *find_path_in_env(char **envp)
+{
+	int i;
+
+	i = 0;
+	while (envp[i])
+	{
+		if (envp[i][0] == 'P' && envp[i][1] == 'A' &&
+		    envp[i][2] == 'T' && envp[i][3] == 'H' &&
+		    envp[i][4] == '=')
+		{
+			return (envp[i] + 5);
+		}
+		i++;
+	}
+	return (NULL);
+}
+
+/**
  * check_direct_path - Vérifie si la commande est un chemin direct
  * @command: La commande à vérifier
  *
@@ -10,7 +34,7 @@ char *check_direct_path(char *command)
 {
 	struct stat st;
 
-	if (command[0] == '/' || command[0] == '.')
+	if (command[0] == '/' || (command[0] == '.' && command[1] == '/'))
 	{
 		if (stat(command, &st) == 0)
 			return (strdup(command));
@@ -77,10 +101,11 @@ char *search_in_path(char *command, char *path_copy)
 /**
  * get_cmd_fullpath - Trouve le chemin d'une commande dans PATH
  * @command: La commande à chercher
+ * @envp: Variables d'environnement
  *
  * Return: Chemin complet ou NULL
  */
-char *get_cmd_fullpath(char *command)
+char *get_cmd_fullpath(char *command, char **envp)
 {
 	char *path_env, *path_copy, *result;
 
@@ -88,7 +113,7 @@ char *get_cmd_fullpath(char *command)
 	if (result)
 		return (result);
 
-	path_env = getenv("PATH");
+	path_env = find_path_in_env(envp);
 	if (!path_env)
 		return (NULL);
 
