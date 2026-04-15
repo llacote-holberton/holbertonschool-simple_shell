@@ -43,26 +43,29 @@ char *get_input_line(void)
  *   a triple pointer in prototype.
  *  => Better to create and return the array directly.
  */
-char **tokenize_string(const char *string, char **tokens)
+char **tokenize_string(const char *string, char *delimiters)
 {
-	const char *delimiters = " \n\t"; /* How to split. */
-	char *string_copy = NULL;         /* Needed because strtok alters it. */
+	printf("Inside tokenizer\n");
+	if (!delimiters)
+		delimiters = " \n\t";           /* How to split. */
+	char *tokenized_string = NULL;         /* Needed because strtok alters it. */
+	char **tokens = NULL; /* Array which will hold token(s) found if any. */
 	size_t tokens_count = 0;          /* Computed with a "first pass".    */
 	char *token = NULL;       /* Revolving variable for each token found. */
 	size_t i = 0;   /* Iterator to fill up tokens array if we found some. */
 
-	/* @fixme rename as "tokenized_string "*/
-	string_copy = strdup(string);
-	if (!string_copy)
+	tokenized_string = strdup(string);
+	if (!tokenized_string)
 	{
 		/* @fixme me a call to "error_logger" or whatever name I give it */
 		/* with just a shortcode like ALLOC_FAILED or something + context. */
 		/* Ideally return would be the same code as long as >0. */
+		printf("Alloc failed for string copy\n");
 		return (NULL);
 	}
 	/* strtok is this weird beast which needs initializing outside loop. */
-	token = strtok(string_copy, delimiters);
-	if (!token)
+	token = strtok(tokenized_string, delimiters);
+	if (token)
 	{
 		tokens_count = 1;
 		while (token)
@@ -76,20 +79,18 @@ char **tokenize_string(const char *string, char **tokens)
 		tokens = malloc(sizeof(char *) * tokens_count);
 	if (!tokens)
 	{
-		free(string_copy); /* @fixme same note as above. */
+		free(tokenized_string); /* @fixme same note as above. */
 		return (NULL);
 	}
 	/* Re-initializing the copy as the EOL would break the re-parsing. */
-	free(string_copy);
-	string_copy = strdup(string);
-	if (!string_copy) /* @fixme same as above*/
+	free(tokenized_string);
+	tokenized_string = strdup(string);
+	if (!tokenized_string) /* @fixme same as above*/
 		return (NULL);
-	tokens[i] = strtok(string_copy, delimiters);
+	tokens[i] = strtok(tokenized_string, delimiters);
 	for (i += 1; i < tokens_count; i++)
 		tokens[i] = strtok(NULL, delimiters);
-	/* Do NOT free string_copy otherwise all for MOOT. */
-	/* Just put its pointer to NULL to stress ownership changed? */
-	/* Also means name is bad. Should be "tokenized_copy" or something. */
+
 	return (tokens);
 }
 
@@ -109,7 +110,7 @@ int process_input(const char *received_input)
 	char **tokens = NULL; /* Placeholder for return of tokenize_string. */
 
 	/* Try and get an array of tokens. */
-	tokens = tokenize_string(received_input, tokens);
+	tokens = tokenize_string(received_input, NULL);
 	/* IF TOKENS NON NULL get PATH and send to SEARCH */
 
 	/* IF COMMAND FOUND EXECUTE */
