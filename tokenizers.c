@@ -74,31 +74,25 @@ char **tokenize_string(const char *string, const char *delimiters)
 
 	if (!delimiters)
 		delimiters = get_default_delimiters();
-	tokenized_string = strdup(string);
-	if (!tokenized_string)
-	{
-		/* @fixme me a call to "error_logger" or whatever name I give it */
-		/* with just a shortcode like ALLOC_FAILED or something + context. */
-		/* Ideally return would be the same code as long as >0. */
-		return (NULL);
-	}
+
 	tokens_count = count_tokens(string, delimiters);
 	if (tokens_count == 0)
 		return (NULL);
-	tokens = malloc(sizeof(char *) * tokens_count);
+
+	/* @warning DO NOT FORGET the "space" for the mandatory NULL cell! */
+	tokens = malloc(sizeof(char *) * tokens_count + 1);
 	if (!tokens)
-	{
-		free(tokenized_string); /* @fixme same note as above. */
 		return (NULL);
-	}
-	/* Re-initializing the copy as the EOL would break the re-parsing. */
-	free(tokenized_string);
+
 	tokenized_string = strdup(string);
 	if (!tokenized_string) /* @fixme same as above*/
 		return (NULL);
+
 	tokens[i] = strtok(tokenized_string, delimiters);
 	for (i += 1; i < tokens_count; i++)
 		tokens[i] = strtok(NULL, delimiters);
-
+	/* @warning DO NOT forget the mandatory NULL cell for others to know end. */
+	tokens[i + 1] = NULL;
+	/* @warning CANNOT FREE TOKENS, IT WILL BE RESPONSABILITY OF CALLER */
 	return (tokens);
 }
