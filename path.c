@@ -38,7 +38,7 @@ static char *check_direct_path(char *command)
 	{
 		if (stat(command, &st) == 0 &&
 		    S_ISREG(st.st_mode) &&
-		    (st.st_mode & S_IXUSR))
+		    access(command, X_OK) == 0)
 			return (strdup(command));
 	}
 	return (NULL);
