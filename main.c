@@ -12,7 +12,7 @@
  *
  * NOTES: confer ADR 003 and 004.
  */
-char *get_input_line(void)
+static char *get_input_line(void)
 {
 	/* @note allocation is automatically done by getline. */
 	char *received_input = NULL; /* "read" was confusing: infinitive/past?     */
