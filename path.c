@@ -6,7 +6,7 @@
  *
  * Return: Valeur de PATH ou NULL
  */
-char *find_path_in_env(char **envp)
+static char *find_path_in_env(char **envp)
 {
 	int i;
 
@@ -30,7 +30,7 @@ char *find_path_in_env(char **envp)
  *
  * Return: Copie du chemin si valide, NULL sinon
  */
-char *check_direct_path(char *command)
+static char *check_direct_path(char *command)
 {
 	struct stat st;
 
@@ -49,7 +49,7 @@ char *check_direct_path(char *command)
  *
  * Return: Chemin complet ou NULL
  */
-char *build_full_path(char *dir, char *command)
+static char *build_full_path(char *dir, char *command)
 {
 	char *full_path;
 	int dir_len, cmd_len;
@@ -75,7 +75,7 @@ char *build_full_path(char *dir, char *command)
  *
  * Return: Chemin complet ou NULL
  */
-char *search_in_path(char *command, char *path_copy)
+static char *search_in_path(char *command, char *path_copy)
 {
 	char *dir, *full_path;
 	struct stat st;
