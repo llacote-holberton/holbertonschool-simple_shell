@@ -26,6 +26,12 @@ static void get_input_line(char **received_input, size_t *received_size)
 		free(*received_input);
 		*received_input = NULL;
 	}
+	else
+	{
+		/* Removing endline by replacing with EOL to "clean line" */
+		/* for parsing. -1 to account for the EOL char */
+		*received_input[read_code - 1] = '\0';
+	}
 }
 
 
@@ -100,10 +106,13 @@ int main(int argc, char **argv, char **envp)
 		{
 			/* Things to free? */
 			/* Error Manager to call? How to know whether -1 means EOF or error?    */
+			putchar('\n');
 			break;
 		}
 		else
 		{
+			/* Display newline immediately BEFORE any potential command output. */
+			putchar('\n');
 			/* Magic happens. Try and parse line as tokens. Try and find command. */
 			/* Try and execute command. Handle errors of all kinds. */
 			printf("Hey hey! I received the input properly!! Here it is! \n");
