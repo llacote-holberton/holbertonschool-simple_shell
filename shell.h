@@ -21,8 +21,12 @@ int execute_command(const char *command, char **arguments, char **envp);
 #include <sys/wait.h>
 #include <sys/stat.h>
 
+
 /* === PROTOTYPES - path.c === */
 char *get_cmd_fullpath(char *command, char **envp);
+
+/* === PROTOTYPES - env_utils.c === */
+char *_getenv(const char *name, char **envp);
 
 /* === PROTOTYPES - main.c === */
 void free_array(char **array);
