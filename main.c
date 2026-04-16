@@ -11,23 +11,21 @@
  * Return: pointer to the retrieved string line.
  *
  * NOTES: confer ADR 003 and 004.
+ * Responsability of freeing memory lies upon caller.
  */
-static char *get_input_line(void)
+static void get_input_line(char **received_input, size_t *received_size)
 {
 	/* @note allocation is automatically done by getline. */
-	char *received_input = NULL; /* "read" was confusing: infinitive/past?     */
-	size_t received_size;                   /* Used by getline for allocation. */
+	/* "read" was confusing: infinitive/past?     */
 	int read_code;         /* Return code of getline, -1 = EndOfFile or error. */
 
 	/* Pass addresses so getline can modify. stdin is provided by compiler.    */
-	read_code = getline(&received_input, &received_size, stdin);
+	read_code = getline(received_input, received_size, stdin);
 	if (read_code == -1)
 	{
-		free(received_input);
-		received_input = NULL;
+		free(*received_input);
+		*received_input = NULL;
 	}
-	return (received_input);
-	/* @fixme how/when to free memory of what was read??? */
 }
 
 
@@ -85,7 +83,8 @@ int main(int argc, char **argv, char **envp)
 {
 	/* First things first: declaring the variables needed at that level.        */
 	int is_interactive;      /* Used to know whether to display prompt.         */
-	char *received_input;        /* Line retrieved from reading STDIN_FILENO.   */
+	char *received_input = NULL; /* Line retrieved from reading STDIN_FILENO.   */
+	size_t received_size = 0;                /* Used by getline for allocation. */
 	const char *prompt = "$ "; /* Line start dispayed to user in IM. */
 
 	/* Will return 1 if shell runned without a stream provided yet (no piping). */
@@ -96,7 +95,7 @@ int main(int argc, char **argv, char **envp)
 	{
 		if (is_interactive)
 			printf("%s", prompt);
-		received_input = get_input_line();
+		get_input_line(&received_input, &received_size);
 		if (received_input == NULL)
 		{
 			/* Things to free? */
