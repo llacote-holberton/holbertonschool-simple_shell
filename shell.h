@@ -21,8 +21,6 @@ int execute_command(const char *command, char **arguments, char **envp);
 #include <sys/wait.h>
 #include <sys/stat.h>
 
-char **tokenize_string(const char *string, const char *delimiters);
-
 
 /* === PROTOTYPES - path.c === */
 char *get_cmd_fullpath(char *command, char **envp);
