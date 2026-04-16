@@ -62,6 +62,9 @@ int process_input(const char *received_input)
 	/* IF COMMAND FOUND EXECUTE */
 
 	/* Clean up everything */
+	/* FREE INNER area, 0 is the whole string so enough */
+	/* @improvement make the "contract" clearer with the callee. */
+	free(tokens[0]);
 	free(tokens);
 
 	/* @temporary */
