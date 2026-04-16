@@ -120,7 +120,9 @@ int main(int argc, char **argv, char **envp)
 			/* Try and execute command. Handle errors of all kinds. */
 			printf("Hey hey! I received the input properly!! Here it is! \n");
 			printf("%s", received_input);
-			process_input(received_input);
+			/* Guard clause to avoid useless calls */
+			if (received_input[0] != '\0')
+				process_input(received_input);
 			/* Finally free everything main "owns". */
 			/* Free received_input? Or only after loop ended? */
 		}
