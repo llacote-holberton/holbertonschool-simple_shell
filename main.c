@@ -46,25 +46,26 @@ static void get_input_line(char **received_input, size_t *received_size)
  * - As it delegates everything to subpointers it does not create
  *     duplicates of the input, just pass its pointer by value.
  */
-int process_input(const char *received_input)
+int process_input(const char *received_input, char **envp)
 {
-	char **tokens = NULL; /* Placeholder for return of tokenize_string. */
+	char **tokens = NULL; /* Placeholder for return of tokenize_string.  */
+	char *command_fullpath = NULL; /* Placeholder command search result */
 
 	/* Try and get an array of tokens. */
 	tokens = tokenize_string(received_input, NULL);
 	/* @fixme implement case "tokens empty or NULL" */
 
 	/* @TEMPORARY */
-	printf("First token is %s", (tokens) ? tokens[0] : "EMPTY ARRAY");
+	printf("\nFirst token is %s\n", (tokens) ? tokens[0] : "EMPTY ARRAY");
 
 	/* IF TOKENS NON NULL get PATH and send to SEARCH */
-
+	if (tokens)
+		command_fullpath = get_cmd_fullpath(tokens[0], envp);
+	printf("Command found: %s\n", command_fullpath);
 	/* IF COMMAND FOUND EXECUTE */
-
+	if (command_fullpath)
+		execute_command(command_fullpath, tokens, envp);
 	/* Clean up everything */
-	/* FREE INNER area, 0 is the whole string so enough */
-	/* @improvement make the "contract" clearer with the callee. */
-	free(tokens[0]);
 	free(tokens);
 
 	/* @temporary */
@@ -122,7 +123,7 @@ int main(int argc, char **argv, char **envp)
 			printf("%s", received_input);
 			/* Guard clause to avoid useless calls */
 			if (received_input[0] != '\0')
-				process_input(received_input);
+				process_input(received_input, envp);
 			/* Finally free everything main "owns". */
 			/* Free received_input? Or only after loop ended? */
 		}
