@@ -10,8 +10,6 @@
  */
 void builtin_exit(char **args, char *line)
 {
-	(void)args;
-
 	if (line)
 		free(line);
 	if (args)
