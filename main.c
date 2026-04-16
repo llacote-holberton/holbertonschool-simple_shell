@@ -30,7 +30,7 @@ static void get_input_line(char **received_input, size_t *received_size)
 	{
 		/* Removing endline by replacing with EOL to "clean line" */
 		/* for parsing. -1 to account for the EOL char */
-		*received_input[read_code - 1] = '\0';
+		(*received_input)[read_code - 1] = '\0';
 	}
 }
 
