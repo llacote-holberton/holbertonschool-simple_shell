@@ -12,8 +12,14 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
+char **tokenize_string(const char *string, const char *delimiters);
+
+
 /* === PROTOTYPES - path.c === */
 char *get_cmd_fullpath(char *command, char **envp);
+
+/* === PROTOTYPES - env_utils.c === */
+char *_getenv(const char *name, char **envp);
 
 /* === PROTOTYPES - main.c === */
 void free_array(char **array);

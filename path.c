@@ -1,30 +1,6 @@
 #include "shell.h"
 
 /**
- * find_path_in_env - Trouve PATH dans environ
- * @envp: Variables d'environnement
- *
- * Return: Valeur de PATH ou NULL
- */
-static char *find_path_in_env(char **envp)
-{
-	int i;
-
-	i = 0;
-	while (envp[i])
-	{
-		if (envp[i][0] == 'P' && envp[i][1] == 'A' &&
-		    envp[i][2] == 'T' && envp[i][3] == 'H' &&
-		    envp[i][4] == '=')
-		{
-			return (envp[i] + 5);
-		}
-		i++;
-	}
-	return (NULL);
-}
-
-/**
  * check_direct_path - Vérifie si la commande est un chemin direct
  * @command: La commande à vérifier
  *
@@ -117,7 +93,7 @@ char *get_cmd_fullpath(char *command, char **envp)
 	if (result)
 		return (result);
 
-	path_env = find_path_in_env(envp);
+	path_env = _getenv("PATH", envp);
 	if (!path_env)
 		return (NULL);
 
