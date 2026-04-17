@@ -8,13 +8,12 @@
  * Description: Libere la memoire allouee puis termine le processus
  * Return: Ne retourne pas (appelle exit)
  */
-void builtin_exit(char **args, char *line)
+void builtin_exit(char **args, char **line)
 {
-	if (line)
-		free(line);
+	if (line && *line)
+		free(*line);
 	if (args)
 		free(args);
-
 	exit(0);
 }
 /**
@@ -47,7 +46,7 @@ void builtin_env(char **envp)
  * Description: Identifie et execute le builtin correspondant
  * Return: 1 si un builtin a ete execute, 0 sinon
  */
-int execute_builtin(char **args, char **envp, char *line)
+int execute_builtin(char **args, char **envp, char **line)
 {
 	if (!args || !args[0])
 		return (0);

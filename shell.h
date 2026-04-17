@@ -32,4 +32,6 @@ char *_getenv(const char *name, char **envp);
 /* === PROTOTYPES - main.c === */
 void free_array(char **array);
 
+int execute_builtin(char **args, char **envp, char **line);
+
 #endif
