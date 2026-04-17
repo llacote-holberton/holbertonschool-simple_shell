@@ -54,8 +54,6 @@ int process_input(const char *received_input, char **envp)
 
 	tokens = tokenize_string(received_input, NULL, &tokenized_string);
 
-	printf("\nFirst token is %s\n", (tokens) ? tokens[0] : "EMPTY ARRAY");
-
 	if (tokens)
 	{
 		builtin_success = execute_builtin(tokens, envp, &tokenized_string);
@@ -114,8 +112,6 @@ int main(int argc, char **argv, char **envp)
 		else
 		{
 			putchar('\n');
-			printf("Hey hey! I received the input properly!! Here it is! \n");
-			printf("%s", received_input);
 			if (received_input[0] != '\0')
 				process_input(received_input, envp);
 
