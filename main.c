@@ -70,7 +70,10 @@ int process_input(const char *received_input, char **envp)
 	printf("Command found: %s\n", command_fullpath);
 	/* IF COMMAND FOUND EXECUTE */
 	if (command_fullpath)
+	{
 		execute_command(command_fullpath, tokens, envp);
+		free(command_fullpath); /* IMU we don't need it anymore. */
+	}
 	/* Clean up everything */
 	free(tokenized_string);
 	free(tokens);
