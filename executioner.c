@@ -8,8 +8,13 @@
 
 /**
  * execute_command - Responsible for handling the run
- *   of a given command with arguments inside 
+ *   of a given command with arguments inside
  *   a spawned child process and handling any errors.
+ * @command: full path of the command to run
+ * @arguments: array of arguments altering/configuring command behaviour.
+ *   Note that the first argument is the command name/path "as provided".
+ * @envp: execution environment to propagate to the child process.
+ * Return: 0 if success, positive if error.
  */
 int execute_command(const char *command, char **arguments, char **envp)
 {
