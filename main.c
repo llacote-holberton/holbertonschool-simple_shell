@@ -29,7 +29,8 @@ static void get_input_line(char **received_input, size_t *received_size)
 		free(*received_input);
 		*received_input = NULL;
 	}
-	else
+	/* @warning check needed because no guarantee of endline in NIM */
+	else if ((*received_input)[read_code - 1] == '\n')
 	{
 		/* Removing endline by replacing with EOL to "clean line" */
 		/* for parsing. -1 to account for the EOL char */
