@@ -18,22 +18,16 @@
  */
 static void get_input_line(char **received_input, size_t *received_size)
 {
-	/* @note allocation is automatically done by getline. */
-	/* "read" was confusing: infinitive/past?     */
 	int read_code;         /* Return code of getline, -1 = EndOfFile or error. */
 
-	/* Pass addresses so getline can modify. stdin is provided by compiler.    */
 	read_code = getline(received_input, received_size, stdin);
 	if (read_code == -1)
 	{
 		free(*received_input);
 		*received_input = NULL;
 	}
-	/* @warning check needed because no guarantee of endline in NIM */
 	else if ((*received_input)[read_code - 1] == '\n')
 	{
-		/* Removing endline by replacing with EOL to "clean line" */
-		/* for parsing. -1 to account for the EOL char */
 		(*received_input)[read_code - 1] = '\0';
 	}
 }
@@ -56,19 +50,18 @@ int process_input(const char *received_input, char **envp)
 	char **tokens = NULL; /* Placeholder for return of tokenize_string.  */
 	char *command_fullpath = NULL; /* Placeholder command search result */
 	char *tokenized_string = NULL; /* Needs to be here to free correctly. */
+	int builtin_success;
 
-	/* Try and get an array of tokens. */
 	tokens = tokenize_string(received_input, NULL, &tokenized_string);
-	/* @fixme implement case "tokens empty or NULL" */
 
-	/* @TEMPORARY */
 	printf("\nFirst token is %s\n", (tokens) ? tokens[0] : "EMPTY ARRAY");
 
-	/* IF TOKENS NON NULL get PATH and send to SEARCH */
 	if (tokens)
-		command_fullpath = get_cmd_fullpath(tokens[0], envp);
-	printf("Command found: %s\n", command_fullpath);
-	/* IF COMMAND FOUND EXECUTE */
+	{
+		builtin_success = execute_builtin(tokens, envp, &tokenized_string);
+		if (!builtin_success)
+			command_fullpath = get_cmd_fullpath(tokens[0], envp);
+	}
 	if (command_fullpath)
 	{
 		execute_command(command_fullpath, tokens, envp);
@@ -101,16 +94,13 @@ int process_input(const char *received_input, char **envp)
  */
 int main(int argc, char **argv, char **envp)
 {
-	/* First things first: declaring the variables needed at that level.        */
-	int is_interactive;      /* Used to know whether to display prompt.         */
-	char *received_input = NULL; /* Line retrieved from reading STDIN_FILENO.   */
-	size_t received_size = 0;                /* Used by getline for allocation. */
-	const char *prompt = "$ "; /* Line start dispayed to user in IM. */
+	int is_interactive;
+	char *received_input = NULL;
+	size_t received_size = 0;
+	const char *prompt = "$ ";
 
-	/* Will return 1 if shell runned without a stream provided yet (no piping). */
 	is_interactive = isatty(STDIN_FILENO);
 
-	/* Start the input management loop, same process for both IM and NIM. */
 	while (1)
 	{
 		if (is_interactive)
@@ -118,29 +108,20 @@ int main(int argc, char **argv, char **envp)
 		get_input_line(&received_input, &received_size);
 		if (received_input == NULL)
 		{
-			/* Things to free? */
-			/* Error Manager to call? How to know whether -1 means EOF or error?    */
 			putchar('\n');
 			break;
 		}
 		else
 		{
-			/* Display newline immediately BEFORE any potential command output. */
 			putchar('\n');
-			/* Magic happens. Try and parse line as tokens. Try and find command. */
-			/* Try and execute command. Handle errors of all kinds. */
 			printf("Hey hey! I received the input properly!! Here it is! \n");
 			printf("%s", received_input);
-			/* Guard clause to avoid useless calls */
 			if (received_input[0] != '\0')
 				process_input(received_input, envp);
-			/* Finally free everything main "owns". */
-			/* Free received_input? Or only after loop ended? */
+
 		}
 	}
-	/* Clean up */
 	free(received_input);
-	/* @temporary */
 	(void)argc;
 	(void)argv;
 	(void)envp;
