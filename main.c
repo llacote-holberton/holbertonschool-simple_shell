@@ -8,6 +8,9 @@
 
 /**
  * get_input_line - Returns the next segment of stdin (stops at 1st \n found).
+ * @received_input: pointer to fill with line read from input.
+ * @received_size: pointer to area holding number of characters read.
+ *
  * Return: pointer to the retrieved string line.
  *
  * NOTES: confer ADR 003 and 004.
@@ -39,6 +42,7 @@ static void get_input_line(char **received_input, size_t *received_size)
  * process_input - Subprocessor.
  *   Goes from "I get string" to "Command ended".
  * @received_input: input retrieved in main with get_input_line.
+ * @envp: execution environment (to "propagate down").
  * Return: 0 on success, error code on failure.
  * NOTES:
  * - I consider this function as a "reader" of input
