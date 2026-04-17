@@ -56,6 +56,7 @@ static size_t count_tokens(const char *string, const char *delimiters)
  *   Goes from "I get string" to "Command ended".
  * @string: string to split in array of tokens.
  * @delimiters: set of characters to consider delimiters.
+ * @tokenized_string: pointer to area receiving the processed string.
  * Return: pointer to array of tokens or NULL if failure / no tokens.
  *
  * NOTES:
@@ -65,9 +66,10 @@ static size_t count_tokens(const char *string, const char *delimiters)
  *   a triple pointer in prototype.
  *  => Better to create and return the array directly.
  */
-char **tokenize_string(const char *string, const char *delimiters)
+char **tokenize_string(const char *string, const char *delimiters,
+											 char **tokenized_string)
 {
-	char *tokenized_string = NULL;         /* Needed because strtok alters it. */
+	/* Third argument to ensure correct free once finished. */
 	char **tokens = NULL; /* Array which will hold token(s) found if any. */
 	size_t tokens_count = 0;          /* Computed with a "first pass".    */
 	size_t i = 0;   /* Iterator to fill up tokens array if we found some. */
@@ -84,14 +86,14 @@ char **tokenize_string(const char *string, const char *delimiters)
 	if (!tokens)
 		return (NULL);
 
-	tokenized_string = strdup(string);
+	*tokenized_string = strdup(string);
 	if (!tokenized_string) /* @fixme same as above*/
 	{
 		free(tokens);
 		return (NULL);
 	}
 
-	tokens[i] = strtok(tokenized_string, delimiters);
+	tokens[i] = strtok(*tokenized_string, delimiters);
 	for (i += 1; i < tokens_count; i++)
 		tokens[i] = strtok(NULL, delimiters);
 	/* @warning DO NOT forget the mandatory NULL cell for others to know end. */

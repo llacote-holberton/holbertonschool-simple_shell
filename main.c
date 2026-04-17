@@ -50,9 +50,10 @@ int process_input(const char *received_input, char **envp)
 {
 	char **tokens = NULL; /* Placeholder for return of tokenize_string.  */
 	char *command_fullpath = NULL; /* Placeholder command search result */
+	char *tokenized_string = NULL; /* Needs to be here to free correctly. */
 
 	/* Try and get an array of tokens. */
-	tokens = tokenize_string(received_input, NULL);
+	tokens = tokenize_string(received_input, NULL, &tokenized_string);
 	/* @fixme implement case "tokens empty or NULL" */
 
 	/* @TEMPORARY */
@@ -66,6 +67,7 @@ int process_input(const char *received_input, char **envp)
 	if (command_fullpath)
 		execute_command(command_fullpath, tokens, envp);
 	/* Clean up everything */
+	free(tokenized_string);
 	free(tokens);
 
 	/* @temporary */
