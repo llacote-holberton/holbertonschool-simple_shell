@@ -101,9 +101,11 @@ void log_functional_error(char *command_tried)
 }
 
 /**
-	* log_custom_error - Returns the template matching given code
+	* log_error - Returns the template matching given code
 	*   with the program name injected into it.
 	* @error_code: arbitrary number must match one of the known cells.
+	* @func_name: name of function in which error was triggered.
+	* @cmd_tried: name of "command" which was attempted.
 	*
 	*/
 void log_error(char *error_code, char *func_name, char *cmd_tried)
