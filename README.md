@@ -45,10 +45,7 @@ and just type ./<executable-name>  (for example for the "demo executable" it wou
 
 ## Process Flow
 
----
-config:
-  theme: neo-dark
----
+```mermaid
 flowchart TB
     START(["🐚 SIMPLE SHELL - Démarrage"]) --> INIT["Initialiser variables<br>line, args, env<br>line_number = 0"]
     INIT --> LOOP{"🔄 Boucle Principale<br>while 1"}
@@ -90,7 +87,7 @@ flowchart TB
     WAIT --> FREE_CMD["Libérer command_fullpath"]
     FREE_CMD --> FREE_LOOP
     FREE_LOOP --> LOOP
-
+```
 ### PATH Resolution
 
 The `get_cmd_fullpath()` function searches for executable commands in the system PATH environment variable.
