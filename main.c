@@ -114,7 +114,6 @@ int main(int argc, char **argv, char **envp)
 		}
 		else
 		{
-			printf("%s", (is_interactive) ? "\n" : "");
 			if (received_input[0] != '\0')
 				process_input(received_input, envp);
 		}
