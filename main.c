@@ -69,9 +69,6 @@ int process_input(const char *received_input, char **envp)
 	free(tokenized_string);
 	free(tokens);
 
-	/* @temporary */
-	(void)tokens;
-
 	return (0);
 }
 
