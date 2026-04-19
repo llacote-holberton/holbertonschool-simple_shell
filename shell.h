@@ -13,6 +13,11 @@ char **tokenize_string(const char *string, char *delimiters,
 /* === PROTOTYPES - executioner.c === */
 int execute_command(const char *command, char **arguments, char **envp);
 
+/* === PROTOTYPES - error_manager.c*/
+char *get_set_program_name(char *string);
+void send_error_message(unsigned int code, char *function_name);
+
+
 /* === INCLUDES === */
 #include <stdio.h>
 #include <stdlib.h>

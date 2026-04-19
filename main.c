@@ -94,7 +94,9 @@ int main(int argc, char **argv, char **envp)
 	size_t received_size = 0;
 	const char *prompt = "$ ";
 
+	(void)argc;
 	is_interactive = isatty(STDIN_FILENO);
+	get_set_program_name(argv[0]);
 
 	while (1)
 	{
@@ -114,10 +116,8 @@ int main(int argc, char **argv, char **envp)
 		}
 	}
 	free(received_input);
-	(void)argc;
-	(void)argv;
-	(void)envp;
-	exit(0);
+
+	return (0);
 }
 
 
