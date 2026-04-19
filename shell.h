@@ -18,10 +18,7 @@ char *get_set_program_name(char *string);
 unsigned int get_set_currentline_number(int increment);
 void log_internal_error(char *func_name);
 void log_functional_error(char *cmd_tried);
-
-
-void send_error_message(unsigned int code, char *function_name);
-
+void *log_error(char *error_code, char *func_name, char *cmd_tried);
 
 /* === INCLUDES === */
 #include <stdio.h>

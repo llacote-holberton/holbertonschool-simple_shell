@@ -98,5 +98,29 @@ void log_functional_error(char *command_tried)
 		command_tried,
 		error_details
 	);
+}
+
+/**
+	* log_custom_error - Returns the template matching given code
+	*   with the program name injected into it.
+	* @error_code: arbitrary number must match one of the known cells.
+	*
+	*/
+void log_error(char *error_code, char *func_name, char *cmd_tried)
+{
+	if (!error_code || error_code[0] == '\0')
+		fprintf(stderr, " ");
+	else if (strcmp(error_code, "INTERNAL_ERR") == 0)
+		log_internal_error(func_name);
+	else if (strcmp(error_code, "FUNCTIONAL_ERR") == 0)
+		log_functional_error(cmd_tried);
+	else if (strcmp(error_code, "NO_VALID_INPUT") == 0)
+		fprintf(stderr, "provided input had nothing exploitable:\n");
+	else if (strcmp(error_code, "CMD_NOT_FOUND") == 0)
+		fprintf(stderr, "command not found: %s\n", func_name);
+	else if (strcmp(error_code, "NO_PATH") == 0)
+		fprintf(stderr, "warning: PATH environment is empty/undefined.\n");
+	else if (strcmp(error_code, "NO_ACCESS") == 0)
+		fprintf(stderr, "Insufficient permissions to access/execute %s", cmd_tried);
 
 }
