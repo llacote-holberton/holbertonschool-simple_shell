@@ -48,39 +48,55 @@ unsigned int get_set_currentline_number(int increment)
 
 /**
  * log_internal_error - Internal debugger (optional).
- * @func_name: name of function from which error was triggered.
+ * @function_name: name of function from which error was triggered.
  */
-void log_internal_error(char *func_name)
+void log_internal_error(char *function_name)
 {
-	/* @important: "shell_name: line_number: command provided"*/
-	char *prefix_tmpl = "%s: %d: %s";
-	static char msg_prefix[256];
-	char *name = NULL;
-	unsigned int line;
+	/* @important: "shell_name: line_number: function name: details"*/
+	char *message_template = "%s: %d: %s: %s\n";
+	char *shell_name = NULL;
+	unsigned int line_number;
+	char *error_details = NULL;
 
-	name = get_set_program_name(NULL);
-	line = get_set_currentline_number(0);
-	sprintf(msg_prefix, prefix_tmpl, name, line, func_name);
+	shell_name = get_set_program_name(NULL);
+	line_number = get_set_currentline_number(0);
+	error_details = strerror(errno);
 
-	fprintf(stderr, "%s: %s\n", msg_prefix, strerror(errno));
+	fprintf
+	(
+		stderr,
+		message_template,
+		shell_name,
+		line_number,
+		function_name,
+		error_details
+	);
 }
 
 /**
  * log_functional_error - Wraps syscall error to give more info.
- * @cmd_tried: what was tried to be run as command, from input.
+ * @command_tried: what was tried to be run as command, from input.
  */
-void log_functional_error(char *cmd_tried)
+void log_functional_error(char *command_tried)
 {
-	/* @important: "shell_name: line_number: command provided"*/
-	char *prefix_tmpl = "%s: %d: %s";
-	static char msg_prefix[256];
-	char *name = NULL;
-	int line_number;
+	/* @important: "shell_name: line_number: command provided: details"*/
+	char *message_template = "%s: %d: %s: %s\n";
+	char *shell_name = NULL;
+	unsigned int line_number;
+	char *error_details = NULL;
 
-	/* Preparing the "common part of all error messages". */
-	name = get_set_program_name(NULL);
+	shell_name = get_set_program_name(NULL);
 	line_number = get_set_currentline_number(0);
-	sprintf(msg_prefix, prefix_tmpl, name, line_number, cmd_tried);
-	/* Printing the complete error message on STDERR_NO*/
-	fprintf(stderr, "%s: %s\n", msg_prefix, strerror(errno));
+	error_details = strerror(errno);
+
+	fprintf
+	(
+		stderr,
+		message_template,
+		shell_name,
+		line_number,
+		command_tried,
+		error_details
+	);
+
 }
