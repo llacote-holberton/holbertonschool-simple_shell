@@ -52,6 +52,7 @@ int process_input(const char *received_input, char **envp)
 	char *command_fullpath = NULL; /* Placeholder command search result */
 	char *tokenized_string = NULL; /* Needs to be here to free correctly. */
 	int builtin_success;
+	int command_exit_code;
 
 	tokens = tokenize_string(received_input, NULL, &tokenized_string);
 
@@ -63,14 +64,15 @@ int process_input(const char *received_input, char **envp)
 	}
 	if (command_fullpath)
 	{
-		execute_command(command_fullpath, tokens, envp);
+		command_exit_code = execute_command(command_fullpath, tokens, envp);
 		free(command_fullpath); /* IMU we don't need it anymore. */
 	}
 	/* Clean up everything */
 	free(tokenized_string);
 	free(tokens);
 
-	return (0);
+	/* @note propagate command exit code if a command was attempted. */
+	return ((command_exit_code) ? command_exit_code : 0);
 }
 
 /**
