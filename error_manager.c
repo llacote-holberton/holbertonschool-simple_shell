@@ -28,64 +28,99 @@ char *get_set_program_name(char *string)
 }
 
 /**
- * get_error_template - Returns the template matching given code
- *   with the program name injected into it.
- * @code: arbitrary number must match one of the known cells.
- * Return: prepared template.
+ * get_set_currentline_number - Returns the number of lines
+ *   read so far (including current).
+ * @increment: 0 means "read count", >0 means "increment by 1"
+ * Return: current number of lines read.
+ *
+ * NOTE: first name was get_set_inputlines_count but IMO
+ *   the new one is more adequate with intended use.
  */
-static char *get_error_template(int code)
+unsigned int get_set_currentline_number(int increment)
 {
-	/* @important: first %s is always program name. */
-	/*             second %s is function name.      */
-	static char *templates[20];
-	static char *program_name;
-	static char prepared_string[256];
+	/* Static -> automatically initialized to 0. */
+	static unsigned int count;
 
-	program_name = get_set_program_name(NULL);
-	/* Potential solution for syscalls: universal template*/
-	/* templates[0] = "%s: %s - %s" */
-	/*  program name, function name, error msg*/
-	templates[1] = "%s: Malloc failed in %%s";
-	templates[2] = "%s: Strdup failed in %%s";
-	templates[3] = "%s: Getline read was interrupted:";
-	templates[4] = "%s: Fork, child creation failed";
-	templates[5] = "%s: Execve, process interrupted";
-	templates[6] = "%s: Failure when attempting to printf/putchar";
-	templates[7] = "%s: Command %%s cannot be found";
-	templates[8] = "%s: Permission to run %%s denied for user %%s";
-	templates[9] = "%s: No PATH found!";
-	templates[10] = "%s: nothing found for path %%s";
-	templates[11] = "%s: Builtin %s unknown";
-	/* @important: TO BE REWORKED (or removed) */
-	/* => Syscalls errors must be exactly the same as with Bash. */
-
-	if (templates[code])
-		sprintf(prepared_string, templates[code], program_name);
-	else
-		prepared_string = NULL;
-
-	return (prepared_string);
+	if (increment)
+		count++;
+	return (count);
 }
 
+/**
+ * log_internal_error - Internal debugger (optional).
+ * @function_name: name of function from which error was triggered.
+ */
+void log_internal_error(char *function_name)
+{
+	/* @important: "shell_name: line_number: function name: details"*/
+	char *message_template = "%s: %d: %s: %s\n";
+	char *shell_name = NULL;
+	unsigned int line_number;
+	char *error_details = NULL;
+
+	shell_name = get_set_program_name(NULL);
+	line_number = get_set_currentline_number(0);
+	error_details = strerror(errno);
+
+	fprintf
+	(
+		stderr,
+		message_template,
+		shell_name,
+		line_number,
+		function_name,
+		error_details
+	);
+}
 
 /**
- * send_error_message - Prints formatted message on standard error.
- * @code: number indicating specific error.
- * @function_name: function from which error was triggered.
+ * log_functional_error - Wraps syscall error to give more info.
+ * @command_tried: what was tried to be run as command, from input.
  */
-void send_error_message(unsigned int code, char *function_name)
+void log_functional_error(char *command_tried)
 {
-	char *error_template = NULL;
-	/*char *error_message = NULL;*/
-	FILE *stream = stderr;
+	/* @important: "shell_name: line_number: command provided: details"*/
+	char *message_template = "%s: %d: %s: %s\n";
+	char *shell_name = NULL;
+	unsigned int line_number;
+	char *error_details = NULL;
 
-	if (!function_name)
-		function_name = "Unknown func";
-	error_template = get_error_template(code);
-	if (!error_template)
-	{
-		error_template = "Nothing found for code %d called from %s\n";
-		fprintf(stderr, error_template, code, function_name);
-	}
-	fprintf(stream, error_template, function_name);
+	shell_name = get_set_program_name(NULL);
+	line_number = get_set_currentline_number(0);
+	error_details = strerror(errno);
+
+	fprintf
+	(
+		stderr,
+		message_template,
+		shell_name,
+		line_number,
+		command_tried,
+		error_details
+	);
+}
+
+/**
+	* log_custom_error - Returns the template matching given code
+	*   with the program name injected into it.
+	* @error_code: arbitrary number must match one of the known cells.
+	*
+	*/
+void log_error(char *error_code, char *func_name, char *cmd_tried)
+{
+	if (!error_code || error_code[0] == '\0')
+		fprintf(stderr, " ");
+	else if (strcmp(error_code, "INTERNAL_ERR") == 0)
+		log_internal_error(func_name);
+	else if (strcmp(error_code, "FUNCTIONAL_ERR") == 0)
+		log_functional_error(cmd_tried);
+	else if (strcmp(error_code, "NO_VALID_INPUT") == 0)
+		fprintf(stderr, "provided input had nothing exploitable:\n");
+	else if (strcmp(error_code, "CMD_NOT_FOUND") == 0)
+		fprintf(stderr, "command not found: %s\n", func_name);
+	else if (strcmp(error_code, "NO_PATH") == 0)
+		fprintf(stderr, "warning: PATH environment is empty/undefined.\n");
+	else if (strcmp(error_code, "NO_ACCESS") == 0)
+		fprintf(stderr, "Insufficient permissions to access/execute %s", cmd_tried);
+
 }
