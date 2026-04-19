@@ -98,20 +98,19 @@ int main(int argc, char **argv, char **envp)
 
 	while (1)
 	{
-		if (is_interactive)
-			printf("%s", prompt);
+		printf("%s", (is_interactive) ? "\n" : "");
 		get_input_line(&received_input, &received_size);
+
 		if (received_input == NULL)
 		{
-			putchar('\n');
+			printf("%s", (is_interactive) ? "\n" : "");
 			break;
 		}
 		else
 		{
-			putchar('\n');
+			printf("%s", (is_interactive) ? "\n" : "");
 			if (received_input[0] != '\0')
 				process_input(received_input, envp);
-
 		}
 	}
 	free(received_input);
