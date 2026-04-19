@@ -100,7 +100,7 @@ int main(int argc, char **argv, char **envp)
 
 	while (1)
 	{
-		printf("%s", (is_interactive) ? "\n" : "");
+		printf("%s", (is_interactive) ? prompt : "");
 		get_input_line(&received_input, &received_size);
 
 		if (received_input == NULL)
