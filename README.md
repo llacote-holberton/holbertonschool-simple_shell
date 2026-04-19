@@ -1,3 +1,34 @@
+# Simple Shell: Command Line Interface to interact with your OS.
+
+### Summary
+Simple Shell is a simple command line interface program allowing user to send simple commands to manipulate files and get information on OS.
+It supports the most essential features a user could expect: support of user $PATH to find programs, propagation of command arguments,
+ error handling, interactive and non-interactive mode.
+
+## How to install and run
+### Prerequisites
+You must have the packages/tools related to C
+  installed on your system, as well as a "compiler"
+  (program used to "prepare" this tool for your machine).
+In case that helps here are online resources to install
+  those tools depending on your operating system
+  * Windows: https://learn.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=msvc-170
+     and https://nullprogram.com/blog/2016/06/13/
+  * Mac: https://www.cs.auckland.ac.nz/~paul/C/Mac/
+  * Linux (deb package system): https://jvns.ca/blog/2025/06/10/how-to-compile-a-c-program/
+
+  ### Downloading
+If you have git and are comfortable with command line,
+  you can simply open one and go to the directory in which you want calculator to be.
+  Then run (without the quotes) `"git clone https://github.com/llacote-holberton/holbertonschool-simple_shell.git"`
+Otherwise you can simply download a zip containing all projects file
+  by following [this url](https://github.com/llacote-holberton/holbertonschool-simple_shell/archive/refs/heads/main.zip)
+  then unfolding it where you want on your computer.
+
+  ### Starting program
+Open a terminal place yourself in the directory in which you have downloaded/extracted the project then compiled an executable,  
+and just type ./<executable-name>  (for example for the "demo executable" it would be `./custom_shell_demo.out`).
+
 ### Key Functions
 
 | File | Function | Description |
