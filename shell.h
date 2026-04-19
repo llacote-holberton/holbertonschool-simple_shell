@@ -7,7 +7,7 @@ int process_input(const char *received_input, char **envp);
 
 /* === PROTOTYPES - tokenizers.c === */
 /* Public facing function to get array of substrings from a string */
-char **tokenize_string(const char *string, char *delimiters,
+char **tokenize_string(const char *string, const char *delimiters,
 											 char **tokenized_string);
 
 /* === PROTOTYPES - executioner.c === */
