@@ -1,5 +1,6 @@
 #include <stdlib.h> /* Required for malloc */
 #include <string.h> /* Required for strtok */
+#include "shell.h"  /* Required for error push */
 
 /**
  * get_default_delimiters - "Helper" function just holding
@@ -45,8 +46,8 @@ static size_t count_tokens(const char *string, const char *delimiters)
 		}
 		free(copy_for_count);
 	}
-	/* else @FIXME IMPLEMENT CASE OF MALLOC FAILURE */
-		/* @fixme implement "SEND MALLOC FAILURE" ERROR MSG */
+	else
+		log_error("INTERNAL_ERR", "count_tokens", NULL);
 
 	return (tokens_count);
 }
@@ -84,11 +85,15 @@ char **tokenize_string(const char *string, const char *delimiters,
 	/* @warning DO NOT FORGET the "space" for the mandatory NULL cell! */
 	tokens = malloc(sizeof(char *) * (tokens_count + 1));
 	if (!tokens)
+	{
+		log_error("INTERNAL_ERR", "tokenize_string", NULL);
 		return (NULL);
+	}
 
 	*tokenized_string = strdup(string);
 	if (!tokenized_string) /* @fixme same as above*/
 	{
+		log_error("INTERNAL_ERR", "tokenize_string", NULL);
 		free(tokens);
 		return (NULL);
 	}
