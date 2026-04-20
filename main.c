@@ -67,8 +67,6 @@ int process_input(const char *received_input, char **envp)
 		command_exit_code = execute_command(command_fullpath, tokens, envp);
 		free(command_fullpath); /* IMU we don't need it anymore. */
 	}
-	else
-		log_error("CMD_NOT_FOUND", "process_input", tokens[0]);
 	/* Clean up everything */
 	free(tokenized_string);
 	free(tokens);
