@@ -14,9 +14,14 @@ int builtin_exit(char **args, char **line)
 	(void)line;
 
 	if (args[1])
+	{
 		exit_code = atoi(args[1]);
+		exit_code = exit_code % 256;
+		if (exit_code < 0)
+			exit_code += 256;
+	}
 
-	return (-1 - exit_code);  /* -1 = exit(0), -2 = exit(1), etc. */
+	return (-1 - exit_code);
 }
 
 /**
