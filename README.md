@@ -47,31 +47,35 @@ and just type ./<executable-name>  (for example for the "demo executable" it wou
 
 ```mermaid
 flowchart TB
-    START(["🐚 SIMPLE SHELL - Démarrage"]) --> INIT["Initialiser variables<br>line, args, env"]
+    START(["🐚 SIMPLE SHELL - Démarrage"]) --> INIT["Initialiser variables<br>line, args, env<br>line_number = 0"]
     INIT --> LOOP{"🔄 Boucle Principale<br>while 1"}
     LOOP --> CHECK_TTY{"Mode interactif ?<br>isatty STDIN"}
-    CHECK_TTY -- OUI --> PRINT_PROMPT["Afficher prompt<br>'$ ' ou '#cisfun$ '"]
+    CHECK_TTY -- OUI --> PRINT_PROMPT["Afficher prompt<br>'$ '"]
     CHECK_TTY -- NON --> NO_PROMPT["Pas de prompt"]
     PRINT_PROMPT --> READ["Lire entrée utilisateur<br>getline"]
     NO_PROMPT --> READ
     READ --> CHECK_EOF{"EOF détecté ?<br>Ctrl+D"}
-    CHECK_EOF -- OUI --> FREE_EXIT["Libérer mémoire<br>free line, args"]
+    CHECK_EOF -- OUI --> PRINT_NEWLINE{"Mode interactif ?"}
+    PRINT_NEWLINE -- OUI --> PRINT_NL["Afficher \\n"]
+    PRINT_NEWLINE -- NON --> FREE_EXIT
+    PRINT_NL --> FREE_EXIT["Libérer mémoire<br>free line"]
     FREE_EXIT --> END(["👋 Fin du Shell"])
-    CHECK_EOF -- NON --> PARSE["Découper la ligne<br>strtok avec délimiteurs<br>espaces, tabs, newlines"]
-    PARSE --> CHECK_EMPTY{"argument vide ?<br>args 0 == NULL"}
-    CHECK_EMPTY -- OUI --> FREE_LOOP["Libérer mémoire<br>free line<br>free args"]
-    CHECK_EMPTY -- NON --> CHECK_BUILTIN{"Built-in ?<br>exit ou env"}
-    CHECK_BUILTIN -- exit --> BUILTIN_EXIT["Built-in: exit<br>Quitter le shell"]
-    BUILTIN_EXIT --> FREE_EXIT
+    CHECK_EOF -- NON --> CHECK_EMPTY{"Ligne vide ?<br>line[0] == '\\0'"}
+    CHECK_EMPTY -- OUI --> LOOP
+    CHECK_EMPTY -- NON --> INCREMENT["line_number++"]
+    INCREMENT --> PARSE["Découper la ligne<br>strtok avec délimiteurs<br>espaces, tabs, newlines"]
+    PARSE --> CHECK_ARGS{"tokens vide ?<br>tokens[0] == NULL"}
+    CHECK_ARGS -- OUI --> FREE_LOOP["Libérer mémoire<br>free tokenized_string<br>free tokens"]
+    CHECK_ARGS -- NON --> CHECK_BUILTIN{"Built-in ?<br>exit ou env"}
+    CHECK_BUILTIN -- exit --> BUILTIN_EXIT["Built-in: exit<br>Libérer mémoire<br>Quitter le shell"]
+    BUILTIN_EXIT --> END
     CHECK_BUILTIN -- env --> BUILTIN_ENV["Built-in: env<br>Afficher variables<br>d'environnement"]
     BUILTIN_ENV --> FREE_LOOP
-    CHECK_BUILTIN -- NON --> FIND_PATH["Chercher commande<br>Si chemin absolu → utiliser tel quel<br>Sinon → chercher dans PATH<br>getenv PATH + strtok"]
+    CHECK_BUILTIN -- NON --> FIND_PATH["Chercher commande<br>get_cmd_fullpath<br>Si chemin absolu/relatif → utiliser tel quel<br>Sinon → chercher dans PATH"]
     FIND_PATH --> CHECK_FOUND{"Commande<br>trouvée ?"}
-    CHECK_FOUND -- NON --> ERROR_NOTFOUND["Afficher erreur<br>'./hsh: 1: cmd: not found'"]
+    CHECK_FOUND -- NON --> ERROR_NOTFOUND["Afficher erreur stderr<br>'argv[0]: line_number: cmd: not found'<br>print_error"]
     ERROR_NOTFOUND --> FREE_LOOP
-    CHECK_FOUND -- OUI --> CHECK_EXECUTABLE{"Fichier<br>exécutable ?<br>stat ou access"}
-    CHECK_EXECUTABLE -- NON --> ERROR_NOTFOUND
-    CHECK_EXECUTABLE -- OUI --> FORK["Créer processus enfant<br>fork"]
+    CHECK_FOUND -- OUI --> FORK["Créer processus enfant<br>fork"]
     FORK --> CHECK_FORK{"fork<br>retourne ?"}
     CHECK_FORK -- "pid == 0" --> CHILD["👶 PROCESSUS ENFANT<br>pid == 0"]
     CHECK_FORK -- pid > 0 --> PARENT["👨 PROCESSUS PARENT<br>pid > 0"]
@@ -80,10 +84,10 @@ flowchart TB
     CHILD --> EXECVE["Remplacer par commande<br>execve pathname, args, env"]
     EXECVE --> EXECVE_ERROR["Si execve échoue<br>perror + exit"]
     PARENT --> WAIT["Attendre fin enfant<br>wait ou waitpid"]
-    WAIT --> FREE_LOOP
+    WAIT --> FREE_CMD["Libérer command_fullpath"]
+    FREE_CMD --> FREE_LOOP
     FREE_LOOP --> LOOP
 ```
-
 ### PATH Resolution
 
 The `get_cmd_fullpath()` function searches for executable commands in the system PATH environment variable.

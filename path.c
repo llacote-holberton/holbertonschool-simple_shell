@@ -1,10 +1,10 @@
 #include "shell.h"
 
 /**
- * check_direct_path - Vérifie si la commande est un chemin direct
- * @command: La commande à vérifier
+ * check_direct_path - Checks if command is a direct path
+ * @command: Command to check
  *
- * Return: Copie du chemin si valide, NULL sinon
+ * Return: Copy of path if valid, NULL otherwise
  */
 static char *check_direct_path(char *command)
 {
@@ -21,11 +21,11 @@ static char *check_direct_path(char *command)
 }
 
 /**
- * build_full_path - Construit le chemin complet
- * @dir: Le dossier
- * @command: La commande
+ * build_full_path - Builds the full path
+ * @dir: Directory
+ * @command: Command
  *
- * Return: Chemin complet ou NULL
+ * Return: Full path or NULL
  */
 static char *build_full_path(char *dir, char *command)
 {
@@ -47,11 +47,11 @@ static char *build_full_path(char *dir, char *command)
 }
 
 /**
- * search_in_path - Cherche la commande dans PATH
- * @command: La commande à chercher
- * @path_copy: Copie du PATH
+ * search_in_path - Searches for command in PATH
+ * @command: Command to search
+ * @path_copy: Copy of PATH
  *
- * Return: Chemin complet ou NULL
+ * Return: Full path or NULL
  */
 static char *search_in_path(char *command, char *path_copy)
 {
@@ -79,11 +79,11 @@ static char *search_in_path(char *command, char *path_copy)
 }
 
 /**
- * get_cmd_fullpath - Trouve le chemin d'une commande dans PATH
- * @command: La commande à chercher
- * @envp: Variables d'environnement
+ * get_cmd_fullpath - Finds command path in PATH
+ * @command: Command to search
+ * @envp: Environment variables
  *
- * Return: Chemin complet ou NULL
+ * Return: Full path or NULL
  */
 char *get_cmd_fullpath(char *command, char **envp)
 {
