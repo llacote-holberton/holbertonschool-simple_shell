@@ -15,29 +15,44 @@
  *   Note that the first argument is the command name/path "as provided".
  * @envp: execution environment to propagate to the child process.
  * Return: 0 if success, positive if error.
+ *
+ * NOTE: defining codes following convention used by many shells. Confer
+ * https://www.networkworld.com/
+ *   article/3546937/understanding-exit-codes-on-linux-2.html
  */
 int execute_command(const char *command, char **arguments, char **envp)
 {
 	pid_t child_pid;
 	int status;      /* Filled by wait with "binary-coded info" */
+	int child_exit_code = 0;
 
-	/* Create a child process */
 	child_pid = fork();
 	if (child_pid == -1)
+	{
+		log_error("INTERNAL_ERR", "execute_command", (char *)command);
 		return (-1); /* HOW TO MANAGE ERRORS??? Read errno */
-	/* Execute command within child */
+	}
 	if (child_pid == 0)
 	{
 		execve(command, arguments, envp);
-		/* @warning do not forget to terminate child process IF execve */
-		/* didn't finish properly (in which case it exits automatically) */
+		log_error("FUNCTIONAL_ERR", "execute_command", (char *)command);
 		exit(EXIT_FAILURE);
 	}
 
-	wait(&status); /* Status gets info we can check with special functions. */
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		printf("Command failed with code: %d\n", WEXITSTATUS(status));
+	/* Status gets info we can check with special functions. */
+	waitpid(child_pid, &status, 0);
+	if (WIFEXITED(status))
+	{
+		/* @note: two-step is mandatory because program can be interrupted. */
+		child_exit_code = WIFEXITED(status);
+		if (WEXITSTATUS(status) != 0)
+			fprintf(stderr, "Command failed with code: %d\n", WEXITSTATUS(status));
+	}
 	else if (WIFSIGNALED(status))
-		printf("Killed by signal: %d\n", WTERMSIG(status));
-	return (0);
+	{
+		/* Convention, confer articles on exit codes from networkworld */
+		child_exit_code = (128 + WIFSIGNALED(status));
+		fprintf(stderr, "Killed by signal: %d\n", WTERMSIG(status));
+	}
+	return (child_exit_code);
 }

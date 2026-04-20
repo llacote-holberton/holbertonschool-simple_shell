@@ -23,6 +23,8 @@ static void get_input_line(char **received_input, size_t *received_size)
 	read_code = getline(received_input, received_size, stdin);
 	if (read_code == -1)
 	{
+		if (!feof(stdin))
+			log_error("FUNCTIONAL_ERR", "get_input_line", NULL);
 		free(*received_input);
 		*received_input = NULL;
 	}
@@ -31,7 +33,6 @@ static void get_input_line(char **received_input, size_t *received_size)
 		(*received_input)[read_code - 1] = '\0';
 	}
 }
-
 
 /**
  * process_input - Subprocessor.
@@ -51,6 +52,7 @@ int process_input(const char *received_input, char **envp)
 	char *command_fullpath = NULL; /* Placeholder command search result */
 	char *tokenized_string = NULL; /* Needs to be here to free correctly. */
 	int builtin_success;
+	int command_exit_code;
 
 	tokens = tokenize_string(received_input, NULL, &tokenized_string);
 
@@ -62,17 +64,15 @@ int process_input(const char *received_input, char **envp)
 	}
 	if (command_fullpath)
 	{
-		execute_command(command_fullpath, tokens, envp);
+		command_exit_code = execute_command(command_fullpath, tokens, envp);
 		free(command_fullpath); /* IMU we don't need it anymore. */
 	}
 	/* Clean up everything */
 	free(tokenized_string);
 	free(tokens);
 
-	/* @temporary */
-	(void)tokens;
-
-	return (0);
+	/* @note propagate command exit code if a command was attempted. */
+	return ((command_exit_code) ? command_exit_code : 0);
 }
 
 /**
@@ -97,31 +97,30 @@ int main(int argc, char **argv, char **envp)
 	size_t received_size = 0;
 	const char *prompt = "$ ";
 
+	(void)argc;
 	is_interactive = isatty(STDIN_FILENO);
+	get_set_program_name(argv[0]);
 
 	while (1)
 	{
-		if (is_interactive)
-			printf("%s", prompt);
+		get_set_currentline_number(1);
+		printf("%s", (is_interactive) ? prompt : "");
 		get_input_line(&received_input, &received_size);
+
 		if (received_input == NULL)
 		{
-			putchar('\n');
+			printf("%s", (is_interactive) ? "\n" : "");
 			break;
 		}
 		else
 		{
-			putchar('\n');
 			if (received_input[0] != '\0')
 				process_input(received_input, envp);
-
 		}
 	}
 	free(received_input);
-	(void)argc;
-	(void)argv;
-	(void)envp;
-	exit(0);
+
+	return (0);
 }
 
 
