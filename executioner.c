@@ -42,7 +42,7 @@ int execute_command(const char *command, char **arguments, char **envp)
 	if (WIFEXITED(status))
 	{
 		/* @note: two-step is mandatory because program can be interrupted. */
-		child_exit_code = WIFEXITED(status);
+		child_exit_code = WEXITSTATUS(status);
 	}
 	else if (WIFSIGNALED(status))
 	{

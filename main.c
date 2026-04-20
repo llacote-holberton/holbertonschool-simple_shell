@@ -16,7 +16,7 @@
  */
 static void get_input_line(char **received_input, size_t *received_size)
 {
-	ssize_t read_code;         /* Return code of getline, -1 = EndOfFile or error. */
+	ssize_t read_code; /* Return code of getline, -1 = EndOfFile or error. */
 
 	read_code = getline(received_input, received_size, stdin);
 	if (read_code == -1)
@@ -73,8 +73,8 @@ int process_input(const char *received_input, char **envp,
 	free(tokenized_string);
 	free(tokens);
 
-	/* @note propagate command exit code if a command was attempted. */
-	return ((command_exit_code) ? command_exit_code : 0);
+	/* @note: propagate command exit code if a command was attempted. */
+	return (command_exit_code);
 }
 
 /**
@@ -99,6 +99,7 @@ int main(int argc, char **argv, char **envp)
 	size_t received_size = 0;
 	const char *prompt = "($) ";
 	int line_number = 0;
+	int process_return = 0;
 
 	(void)argc;
 	is_interactive = isatty(STDIN_FILENO);
@@ -116,10 +117,10 @@ int main(int argc, char **argv, char **envp)
 		if (received_input[0] != '\0')
 		{
 			line_number++;
-			process_input(received_input, envp, argv[0], line_number);
+			process_return = process_input(received_input, envp, argv[0], line_number);
 		}
 	}
 	free(received_input);
 
-	return (0);
+	exit(process_return);
 }
