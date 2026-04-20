@@ -2,7 +2,8 @@
 #define SHELL_H
 
 /* === PROTOTYPES - main.c === */
-int process_input(const char *received_input, char **envp);
+int process_input(const char *received_input, char **envp, 
+									char *shell_name, int line_number);
 /* @note: put here at least while we develop to allow "unit tests" */
 
 /* === PROTOTYPES - tokenizers.c === */
@@ -12,13 +13,6 @@ char **tokenize_string(const char *string, const char *delimiters,
 
 /* === PROTOTYPES - executioner.c === */
 int execute_command(const char *command, char **arguments, char **envp);
-
-/* === PROTOTYPES - error_manager.c*/
-char *get_set_program_name(char *string);
-unsigned int get_set_currentline_number(int increment);
-void log_internal_error(char *func_name);
-void log_functional_error(char *cmd_tried);
-void *log_error(char *error_code, char *func_name, char *cmd_tried);
 
 /* === INCLUDES === */
 #include <stdio.h>

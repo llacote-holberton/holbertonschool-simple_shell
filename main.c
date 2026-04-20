@@ -23,8 +23,6 @@ static void get_input_line(char **received_input, size_t *received_size)
 	read_code = getline(received_input, received_size, stdin);
 	if (read_code == -1)
 	{
-		if (!feof(stdin))
-			/*log_error("FUNCTIONAL_ERR", "get_input_line", NULL);*/
 		free(*received_input);
 		*received_input = NULL;
 	}
@@ -39,6 +37,8 @@ static void get_input_line(char **received_input, size_t *received_size)
  *   Goes from "I get string" to "Command ended".
  * @received_input: input retrieved in main with get_input_line.
  * @envp: execution environment (to "propagate down").
+ * @shell_name: how the program was called.
+ * @line_number: number of line currently processed.
  * Return: 0 on success, error code on failure.
  * NOTES:
  * - I consider this function as a "reader" of input
@@ -46,7 +46,8 @@ static void get_input_line(char **received_input, size_t *received_size)
  * - As it delegates everything to subpointers it does not create
  *     duplicates of the input, just pass its pointer by value.
  */
-int process_input(const char *received_input, char **envp)
+int process_input(const char *received_input, char **envp,
+									char *shell_name, int line_number)
 {
 	char **tokens = NULL; /* Placeholder for return of tokenize_string.  */
 	char *command_fullpath = NULL; /* Placeholder command search result */
@@ -68,7 +69,8 @@ int process_input(const char *received_input, char **envp)
 		free(command_fullpath); /* IMU we don't need it anymore. */
 	}
 	else
-		log_error("CMD_NOT_FOUND", "process_input", (char *)received_input);
+		fprintf(stderr, "%s: %d: %s: not found", shell_name,
+						line_number, tokens[0]);
 	/* Clean up everything */
 	free(tokenized_string);
 	free(tokens);
@@ -98,14 +100,14 @@ int main(int argc, char **argv, char **envp)
 	char *received_input = NULL;
 	size_t received_size = 0;
 	const char *prompt = "$ ";
+	int line_number = 0;
 
 	(void)argc;
 	is_interactive = isatty(STDIN_FILENO);
-	get_set_program_name(argv[0]);
 
 	while (1)
 	{
-		get_set_currentline_number(1);
+		line_number++;
 		printf("%s", (is_interactive) ? prompt : "");
 		get_input_line(&received_input, &received_size);
 
@@ -117,7 +119,7 @@ int main(int argc, char **argv, char **envp)
 		else
 		{
 			if (received_input[0] != '\0')
-				process_input(received_input, envp);
+				process_input(received_input, envp, argv[0], line_number);
 		}
 	}
 	free(received_input);
