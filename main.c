@@ -52,7 +52,7 @@ int process_input(const char *received_input, char **envp)
 	char *command_fullpath = NULL; /* Placeholder command search result */
 	char *tokenized_string = NULL; /* Needs to be here to free correctly. */
 	int builtin_success;
-	int command_exit_code;
+	int command_exit_code = 0;
 
 	tokens = tokenize_string(received_input, NULL, &tokenized_string);
 
@@ -67,6 +67,8 @@ int process_input(const char *received_input, char **envp)
 		command_exit_code = execute_command(command_fullpath, tokens, envp);
 		free(command_fullpath); /* IMU we don't need it anymore. */
 	}
+	else
+		log_error("CMD_NOT_FOUND", "process_input", (char *)received_input);
 	/* Clean up everything */
 	free(tokenized_string);
 	free(tokens);

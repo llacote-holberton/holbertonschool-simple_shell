@@ -110,6 +110,23 @@ void log_functional_error(char *command_tried)
 	*/
 void log_error(char *error_code, char *func_name, char *cmd_tried)
 {
+	/* Messages always start with shell name and line number */
+	char *prefix_template = "%s: %d: ";
+	static char msg_prefix[256];
+
+	if (!func_name)
+		func_name = "(null)";
+	if (!cmd_tried)
+		cmd_tried = "(null)";
+	/* Preparing/Updating the "common part" of all error messages */
+	sprintf
+	(
+		msg_prefix,
+		prefix_template,
+		get_set_program_name(NULL),
+		get_set_currentline_number(0)
+	);
+
 	if (!error_code || error_code[0] == '\0')
 		fprintf(stderr, " ");
 	else if (strcmp(error_code, "INTERNAL_ERR") == 0)
@@ -119,10 +136,9 @@ void log_error(char *error_code, char *func_name, char *cmd_tried)
 	else if (strcmp(error_code, "NO_VALID_INPUT") == 0)
 		fprintf(stderr, "provided input had nothing exploitable:\n");
 	else if (strcmp(error_code, "CMD_NOT_FOUND") == 0)
-		fprintf(stderr, "command not found: %s\n", func_name);
+		fprintf(stderr, "%s%s: not found\n", msg_prefix, cmd_tried);
 	else if (strcmp(error_code, "NO_PATH") == 0)
 		fprintf(stderr, "warning: PATH environment is empty/undefined.\n");
 	else if (strcmp(error_code, "NO_ACCESS") == 0)
 		fprintf(stderr, "Insufficient permissions to access/execute %s", cmd_tried);
-
 }
