@@ -1,0 +1,146 @@
+.TH HSH 1 "April 2026" "1.0" "Simple Shell Manual"
+
+.SH NAME
+hsh \- simple UNIX command line interpreter
+
+.SH SYNOPSIS
+.B hsh
+.br
+.B echo
+.I "command"
+|
+.B hsh
+
+.SH DESCRIPTION
+.B hsh
+is a simple UNIX command-line interpreter that reads commands from standard input or from a file and executes them.
+
+.SH USAGE
+
+.SS Interactive Mode
+In interactive mode,
+.B hsh
+displays a prompt ("$ ") and waits for the user to type a command. After executing the command, the prompt is displayed again.
+
+.SS Non-Interactive Mode
+In non-interactive mode,
+.B hsh
+reads commands from standard input (via pipe or redirection), executes them, and exits when all commands are processed.
+
+.SH COMMAND EXECUTION
+
+.B hsh
+executes commands in the following order:
+
+.IP 1. 4
+Checks if the command is a built-in (exit, env)
+.IP 2. 4
+If not a built-in, searches for the command:
+.RS
+.IP \(bu 2
+If the command contains '/' (absolute or relative path), uses it directly
+.IP \(bu 2
+Otherwise, searches for the command in directories listed in the PATH environment variable
+.RE
+.IP 3. 4
+If found, executes the command in a child process using fork() and execve()
+.IP 4. 4
+Waits for the command to complete before returning to the prompt
+
+.SH BUILT-IN COMMANDS
+
+.TP
+.B exit
+Exits the shell.
+.TP
+.B env
+Prints all environment variables.
+
+.SH RETURN VALUE
+.B hsh
+returns the exit status of the last executed command.
+
+.SH ENVIRONMENT
+.TP
+.B PATH
+List of directories to search for executable commands, separated by colons (:).
+
+.SH EXAMPLES
+
+.SS Interactive Mode
+.nf
+$ ./hsh
+$ ls -l
+total 100
+-rw-r--r-- 1 user user 1234 Apr 19 10:00 main.c
+$ pwd
+/home/user/simple_shell
+$ exit
+.fi
+
+.SS Non-Interactive Mode
+.nf
+$ echo "ls" | ./hsh
+main.c shell.c hsh
+
+$ echo -e "pwd\\nls\\nexit" | ./hsh
+/home/user/simple_shell
+main.c shell.c hsh
+.fi
+
+.SH ERROR MESSAGES
+When a command is not found,
+.B hsh
+prints an error message to stderr in the format:
+.PP
+.I ./hsh: 1: command: not found
+.PP
+Where
+.I ./hsh
+is the name of the shell (from argv[0]),
+.I 1
+is the line number, and
+.I command
+is the name of the command that was not found.
+
+.SH EXIT STATUS
+.B hsh
+returns 0 on success and 1 on error.
+
+.SH FILES
+None.
+
+.SH BUGS
+No known bugs.
+.PP
+The following features are not implemented:
+.IP \(bu 2
+Command separators (;, &&, ||)
+.IP \(bu 2
+Pipes (|)
+.IP \(bu 2
+Redirections (>, <, >>)
+.IP \(bu 2
+Wildcards (*, ?)
+.IP \(bu 2
+Variable expansion ($VAR)
+.IP \(bu 2
+Quotes handling
+.IP \(bu 2
+Comments (#)
+
+.SH AUTHORS
+Soufiane Filali, Laurent Lacôte
+
+.SH SEE ALSO
+.BR sh (1),
+.BR bash (1),
+.BR execve (2),
+.BR fork (2),
+.BR wait (2),
+.BR getline (3),
+.BR strtok (3)
+
+.SH COPYRIGHT
+This is free software: you are free to change and redistribute it.
+This program is part of the Holberton School curriculum.
