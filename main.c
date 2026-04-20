@@ -1,22 +1,13 @@
-#include <stdio.h>  /* Required for printf */
-#include <stdlib.h> /* Required for malloc */
-#include <string.h> /* Required for strtok */
-#include <unistd.h> /* Required for isatty */
-#include "shell.h"  /* Custom functions    */
+#include "shell.h"
 
 /**
- * get_input_line - Returns the next segment of stdin (stops at 1st \n found).
- * @received_input: pointer to fill with line read from input.
- * @received_size: pointer to area holding number of characters read.
- *
- * Return: pointer to the retrieved string line.
- *
- * NOTES: confer ADR 003 and 004.
- * Responsability of freeing memory lies upon caller.
+ * get_input_line - Reads a line from stdin
+ * @received_input: Pointer to buffer
+ * @received_size: Size of buffer
  */
 static void get_input_line(char **received_input, size_t *received_size)
 {
-	ssize_t read_code; /* Return code of getline, -1 = EndOfFile or error. */
+	ssize_t read_code;
 
 	read_code = getline(received_input, received_size, stdin);
 	if (read_code == -1)
@@ -31,25 +22,20 @@ static void get_input_line(char **received_input, size_t *received_size)
 }
 
 /**
- * process_input - Subprocessor.
- *   Goes from "I get string" to "Command ended".
- * @received_input: input retrieved in main with get_input_line.
- * @envp: execution environment (to "propagate down").
- * @shell_name: how the program was called.
- * @line_number: number of line currently processed.
- * Return: 0 on success, error code on failure.
- * NOTES:
- * - I consider this function as a "reader" of input
- *   so I pass a constant pointer to stress it.
- * - As it delegates everything to subpointers it does not create
- *     duplicates of the input, just pass its pointer by value.
+ * process_input - Processes a command
+ * @received_input: Command string
+ * @envp: Environment variables
+ * @shell_name: Shell name
+ * @line_number: Line number
+ *
+ * Return: Exit code
  */
 int process_input(const char *received_input, char **envp,
-									char *shell_name, int line_number)
+                 char *shell_name, int line_number)
 {
-	char **tokens = NULL; /* Placeholder for return of tokenize_string.  */
-	char *command_fullpath = NULL; /* Placeholder command search result */
-	char *tokenized_string = NULL; /* Needs to be here to free correctly. */
+	char **tokens = NULL;
+	char *command_fullpath = NULL;
+	char *tokenized_string = NULL;
 	int builtin_success;
 	int command_exit_code = 0;
 
@@ -59,44 +45,45 @@ int process_input(const char *received_input, char **envp,
 		return (0);
 
 	builtin_success = execute_builtin(tokens, envp, &tokenized_string);
-	if (!builtin_success)
-		command_fullpath = get_cmd_fullpath(tokens[0], envp);
+	
+	if (builtin_success)
+	{
+		if (tokenized_string)
+			free(tokenized_string);
+		if (tokens)
+			free(tokens);
+		return (0);
+	}
+
+	command_fullpath = get_cmd_fullpath(tokens[0], envp);
 
 	if (command_fullpath)
 	{
 		command_exit_code = execute_command(command_fullpath, tokens, envp);
-		free(command_fullpath); /* IMU we don't need it anymore. */
+		free(command_fullpath);
 	}
 	else
 	{
 		command_exit_code = 127;
-		fprintf(stderr, "%s: %d: %s: not found\n", shell_name,
-						line_number, tokens[0]);
+		fprintf(stderr, "%s: %d: %s: not found\n",
+			shell_name, line_number, tokens[0]);
 	}
-	/* Clean up everything */
+
 	if (tokenized_string)
 		free(tokenized_string);
 	if (tokens)
 		free(tokens);
 
-	/* @note: propagate command exit code if a command was attempted. */
 	return (command_exit_code);
 }
 
 /**
- * main - Main entry point for simple shell.
- * @argc: count of provided arguments (shell itself counted)
- * @argv: array of strings representing line cut by spaces.
- * @envp: array of environment variables provided by caller.
- * Return: 0 in success, positive on error.
+ * main - Entry point
+ * @argc: Argument count
+ * @argv: Argument vector
+ * @envp: Environment
  *
- * NOTES: finally will be simpler than expected.
- * - No support for processing arguments given "beyond shell".
- *   User will need to either just wait for prompt, or run shell
- *   with input provided from "piping something into shell".
- * - No early check for ENV/PATH for now, will delegate.
- *     May change later once we have a working function to drill into env.
- * - IM = Interactive Mode. NIM = Non-Interactive Mode.
+ * Return: Last command exit code
  */
 int main(int argc, char **argv, char **envp)
 {
@@ -112,21 +99,25 @@ int main(int argc, char **argv, char **envp)
 
 	while (1)
 	{
-		printf("%s", (is_interactive) ? prompt : "");
+		if (is_interactive)
+			printf("%s", prompt);
+
 		get_input_line(&received_input, &received_size);
 
 		if (received_input == NULL)
 		{
-			printf("%s", (is_interactive) ? "\n" : "");
+			if (is_interactive)
+				putchar('\n');
 			break;
 		}
+
 		if (received_input[0] != '\0')
 		{
 			line_number++;
 			process_return = process_input(received_input, envp, argv[0], line_number);
 		}
 	}
-	free(received_input);
 
+	free(received_input);
 	exit(process_return);
 }
