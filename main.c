@@ -28,7 +28,7 @@ static void get_input_line(char **received_input, size_t *received_size)
  * @shell_name: Shell name
  * @line_number: Line number
  *
- * Return: Exit code
+ * Return: Exit code (negative = exit requested)
  */
 int process_input(const char *received_input, char **envp,
                  char *shell_name, int line_number)
@@ -45,6 +45,15 @@ int process_input(const char *received_input, char **envp,
 		return (0);
 
 	builtin_success = execute_builtin(tokens, envp, &tokenized_string);
+	
+	if (builtin_success < 0)  /* exit requested */
+	{
+		if (tokenized_string)
+			free(tokenized_string);
+		if (tokens)
+			free(tokens);
+		return (builtin_success);  /* Propagate exit code */
+	}
 	
 	if (builtin_success)
 	{
@@ -115,6 +124,12 @@ int main(int argc, char **argv, char **envp)
 		{
 			line_number++;
 			process_return = process_input(received_input, envp, argv[0], line_number);
+			
+			if (process_return < 0)  /* exit requested */
+			{
+				free(received_input);
+				exit(-1 - process_return);  /* Decode: -1=-1-0, -2=-1-1, etc */
+			}
 		}
 	}
 
