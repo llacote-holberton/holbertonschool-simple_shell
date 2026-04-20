@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * builtin_exit - Exits the shell cleanly
+ * builtin_exit - Exits the shell
  * @args: Array of command arguments
  * @line: Input line to free before exiting
  *
@@ -9,11 +9,20 @@
  */
 void builtin_exit(char **args, char **line)
 {
+	int exit_code = 0;
+
+	/* Si exit a un argument, l'utiliser comme code de sortie */
+	if (args[1])
+	{
+		exit_code = atoi(args[1]);
+	}
+
 	if (line && *line)
 		free(*line);
 	if (args)
 		free(args);
-	exit(0);
+	
+	exit(exit_code);
 }
 
 /**
