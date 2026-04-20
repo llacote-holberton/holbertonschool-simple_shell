@@ -4,8 +4,6 @@
 #include <unistd.h> /* Required for isatty */
 #include "shell.h"  /* Custom functions    */
 
-/*****************************************************************************/
-
 /**
  * get_input_line - Returns the next segment of stdin (stops at 1st \n found).
  * @received_input: pointer to fill with line read from input.
@@ -18,7 +16,7 @@
  */
 static void get_input_line(char **received_input, size_t *received_size)
 {
-	int read_code;         /* Return code of getline, -1 = EndOfFile or error. */
+	ssize_t read_code;         /* Return code of getline, -1 = EndOfFile or error. */
 
 	read_code = getline(received_input, received_size, stdin);
 	if (read_code == -1)
@@ -69,7 +67,7 @@ int process_input(const char *received_input, char **envp,
 		free(command_fullpath); /* IMU we don't need it anymore. */
 	}
 	else
-		fprintf(stderr, "%s: %d: %s: not found", shell_name,
+		fprintf(stderr, "%s: %d: %s: not found\n", shell_name,
 						line_number, tokens[0]);
 	/* Clean up everything */
 	free(tokenized_string);
@@ -99,7 +97,7 @@ int main(int argc, char **argv, char **envp)
 	int is_interactive;
 	char *received_input = NULL;
 	size_t received_size = 0;
-	const char *prompt = "$ ";
+	const char *prompt = "($) ";
 	int line_number = 0;
 
 	(void)argc;
@@ -107,7 +105,6 @@ int main(int argc, char **argv, char **envp)
 
 	while (1)
 	{
-		line_number++;
 		printf("%s", (is_interactive) ? prompt : "");
 		get_input_line(&received_input, &received_size);
 
@@ -116,16 +113,13 @@ int main(int argc, char **argv, char **envp)
 			printf("%s", (is_interactive) ? "\n" : "");
 			break;
 		}
-		else
+		if (received_input[0] != '\0')
 		{
-			if (received_input[0] != '\0')
-				process_input(received_input, envp, argv[0], line_number);
+			line_number++;
+			process_input(received_input, envp, argv[0], line_number);
 		}
 	}
 	free(received_input);
 
 	return (0);
 }
-
-
-/*****************************************************************************/
