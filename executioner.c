@@ -29,13 +29,13 @@ int execute_command(const char *command, char **arguments, char **envp)
 	child_pid = fork();
 	if (child_pid == -1)
 	{
-		log_error("INTERNAL_ERR", "execute_command", (char *)command);
+		/*log_error("INTERNAL_ERR", "execute_command", (char *)command);*/
 		return (-1); /* HOW TO MANAGE ERRORS??? Read errno */
 	}
 	if (child_pid == 0)
 	{
 		execve(command, arguments, envp);
-		log_error("FUNCTIONAL_ERR", "execute_command", (char *)command);
+		/*log_error("FUNCTIONAL_ERR", "execute_command", (char *)command);*/
 		exit(EXIT_FAILURE);
 	}
 
@@ -45,14 +45,14 @@ int execute_command(const char *command, char **arguments, char **envp)
 	{
 		/* @note: two-step is mandatory because program can be interrupted. */
 		child_exit_code = WIFEXITED(status);
-		if (WEXITSTATUS(status) != 0)
-			fprintf(stderr, "Command failed with code: %d\n", WEXITSTATUS(status));
+		/*if (WEXITSTATUS(status) != 0)*/
+		/*	fprintf(stderr, "Command failed with code: %d\n", WEXITSTATUS(status));*/
 	}
 	else if (WIFSIGNALED(status))
 	{
 		/* Convention, confer articles on exit codes from networkworld */
 		child_exit_code = (128 + WIFSIGNALED(status));
-		fprintf(stderr, "Killed by signal: %d\n", WTERMSIG(status));
+		/*fprintf(stderr, "Killed by signal: %d\n", WTERMSIG(status));*/
 	}
 	return (child_exit_code);
 }

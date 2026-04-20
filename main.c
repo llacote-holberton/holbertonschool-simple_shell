@@ -24,7 +24,7 @@ static void get_input_line(char **received_input, size_t *received_size)
 	if (read_code == -1)
 	{
 		if (!feof(stdin))
-			log_error("FUNCTIONAL_ERR", "get_input_line", NULL);
+			/*log_error("FUNCTIONAL_ERR", "get_input_line", NULL);*/
 		free(*received_input);
 		*received_input = NULL;
 	}

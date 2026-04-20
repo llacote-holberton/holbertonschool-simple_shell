@@ -47,7 +47,7 @@ static size_t count_tokens(const char *string, const char *delimiters)
 		free(copy_for_count);
 	}
 	else
-		log_error("INTERNAL_ERR", "count_tokens", NULL);
+		/*log_error("INTERNAL_ERR", "count_tokens", NULL);*/
 
 	return (tokens_count);
 }
@@ -86,14 +86,14 @@ char **tokenize_string(const char *string, const char *delimiters,
 	tokens = malloc(sizeof(char *) * (tokens_count + 1));
 	if (!tokens)
 	{
-		log_error("INTERNAL_ERR", "tokenize_string", NULL);
+		/*log_error("INTERNAL_ERR", "tokenize_string", NULL);*/
 		return (NULL);
 	}
 
 	*tokenized_string = strdup(string);
 	if (!tokenized_string) /* @fixme same as above*/
 	{
-		log_error("INTERNAL_ERR", "tokenize_string", NULL);
+		/*log_error("INTERNAL_ERR", "tokenize_string", NULL);*/
 		free(tokens);
 		return (NULL);
 	}
