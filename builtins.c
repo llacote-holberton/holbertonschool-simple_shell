@@ -1,12 +1,11 @@
 #include "shell.h"
 
 /**
- * builtin_exit - Quitte le shell proprement
- * @args: Tableau d'arguments de la commande
- * @line: Ligne d'entree a liberer avant de quitter
+ * builtin_exit - Exits the shell cleanly
+ * @args: Array of command arguments
+ * @line: Input line to free before exiting
  *
- * Description: Libere la memoire allouee puis termine le processus
- * Return: Ne retourne pas (appelle exit)
+ * Return: Does not return (calls exit)
  */
 void builtin_exit(char **args, char **line)
 {
@@ -16,12 +15,10 @@ void builtin_exit(char **args, char **line)
 		free(args);
 	exit(0);
 }
+
 /**
  * builtin_env - Displays all environment variables
  * @envp: Array of environment variables
- *
- * Description: Iterates through and prints each environment variable
- * Return: Nothing
  */
 void builtin_env(char **envp)
 {
@@ -37,14 +34,14 @@ void builtin_env(char **envp)
 		index++;
 	}
 }
+
 /**
- * execute_builtin - Execute un builtin s'il est reconnu
- * @args: Tableau d'arguments de la commande
- * @envp: Variables d'environnement
- * @line: Ligne complete a liberer si exit est appele
+ * execute_builtin - Executes a builtin if recognized
+ * @args: Array of command arguments
+ * @envp: Environment variables
+ * @line: Complete line to free if exit is called
  *
- * Description: Identifie et execute le builtin correspondant
- * Return: 1 si un builtin a ete execute, 0 sinon
+ * Return: 1 if a builtin was executed, 0 otherwise
  */
 int execute_builtin(char **args, char **envp, char **line)
 {
