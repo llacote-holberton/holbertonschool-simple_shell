@@ -55,23 +55,29 @@ int process_input(const char *received_input, char **envp,
 
 	tokens = tokenize_string(received_input, NULL, &tokenized_string);
 
-	if (tokens)
-	{
-		builtin_success = execute_builtin(tokens, envp, &tokenized_string);
-		if (!builtin_success)
-			command_fullpath = get_cmd_fullpath(tokens[0], envp);
-	}
+	if (!tokens)
+		return (0);
+
+	builtin_success = execute_builtin(tokens, envp, &tokenized_string);
+	if (!builtin_success)
+		command_fullpath = get_cmd_fullpath(tokens[0], envp);
+
 	if (command_fullpath)
 	{
 		command_exit_code = execute_command(command_fullpath, tokens, envp);
 		free(command_fullpath); /* IMU we don't need it anymore. */
 	}
 	else
+	{
+		command_exit_code = 127;
 		fprintf(stderr, "%s: %d: %s: not found\n", shell_name,
 						line_number, tokens[0]);
+	}
 	/* Clean up everything */
-	free(tokenized_string);
-	free(tokens);
+	if (tokenized_string)
+		free(tokenized_string);
+	if (tokens)
+		free(tokens);
 
 	/* @note: propagate command exit code if a command was attempted. */
 	return (command_exit_code);

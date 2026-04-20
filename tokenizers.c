@@ -68,10 +68,9 @@ static size_t count_tokens(const char *string, const char *delimiters)
 char **tokenize_string(const char *string, const char *delimiters,
 											 char **tokenized_string)
 {
-	/* Third argument to ensure correct free once finished. */
-	char **tokens = NULL; /* Array which will hold token(s) found if any. */
-	size_t tokens_count = 0;          /* Computed with a "first pass".    */
-	size_t i = 0;   /* Iterator to fill up tokens array if we found some. */
+	char **tokens = NULL;
+	size_t tokens_count = 0;
+	size_t i = 0;
 
 	if (!delimiters)
 		delimiters = get_default_delimiters();
@@ -88,7 +87,7 @@ char **tokenize_string(const char *string, const char *delimiters,
 	}
 
 	*tokenized_string = strdup(string);
-	if (!tokenized_string) /* @fixme same as above*/
+	if (!*tokenized_string)
 	{
 		free(tokens);
 		return (NULL);
