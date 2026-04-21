@@ -6,6 +6,12 @@ It supports the most essential features a user could expect: support of user $PA
  error handling, interactive and non-interactive mode.
 
 ## How to install and run
+
+In a nutshell: ensure you meet all prerequisites (POSIX compatible system, C language libraries, GCC compilation tools and optionally GDB/Valgrind), download the source code, compile it with gcc (quick example `gcc -std=gnu89 downloaded-code/*.c -o simpleshell`) and run it (`./simpleshell`).
+
+<details>
+<summary>(Click for detailed information on prerequisites, download and compilation steps)</b></summary>
+
 ### Prerequisites
 1. This program can only run properly on a POSIX-compliant operating system with support for the "main envp" extension (in short: any GNU/Linux distribution, Mac OS, or a GNU/Linux distribution installed within Windows Subsystem for Linux). As it relies on POSIX APIs.
 
@@ -28,6 +34,8 @@ Open a terminal, go inside the project directory (the one created from git clone
 Then type the following command (without quotes if you're reading this as raw text).
 Note that you can replace "hsh.out" with any filename you fancy.  
 `gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh.out`  
+
+</details>
 
 ## How to use
 
@@ -86,7 +94,11 @@ man 1 hsh                                              # Will now work wherever 
 
 ## Examples of use
 
+<details>
+<summary>(Click to expand)</b></summary>
+
 ### Valid examples
+
 All following examples describe the "non-interactive" way with shell named 'hsh'. For the interactive one, just start the shell then type what is within the double quotes (ex `echo "ls -latr /tmp | ./hsh"` --> `ls -latr /tmp`).
 
 | Use case                                         | Command line                              |
@@ -104,6 +116,8 @@ Couple of use-cases which are not supported.
 | Listing the 10 biggest files of my user's home directory (pipes unrecognized)   | `du -h --max-depth=1 | sort -hr | head -n 10` |
 | Find C source files in directory tree from "here" (double quotes don't protect) | `find . -name "*.c"`                          |
 | Appending an item to a basic tasklist ("appending redirect" unrecognized)       | `echo "tomato sauce" >> shopping_list.txt`    |
+
+</details>
 
 ## Technical information
 
