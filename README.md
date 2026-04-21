@@ -172,6 +172,9 @@ flowchart TB
     FREE_CMD --> FREE_LOOP
     FREE_LOOP --> LOOP
 ```
+
+For a deep dive into the inner workings and design choices, including PATH resolution and function-level architecture, please read our dedicated [Architecture](./ARCHITECTURE.md) page.
+
 ### Memory management
 Code has been examined with Valgrind and tested with various use-cases to try and make it as robust as possible (confer [Testing](#testing)) for details.
 Here is an example output of Valgrind after ~20 loops of various (supported) commands.
@@ -186,58 +189,6 @@ Here is an example output of Valgrind after ~20 loops of various (supported) com
 ==8== For lists of detected and suppressed errors, rerun with: -s
 ==8== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
-
-### Architecture details 
-
-#### Key Functions @FIXME CHECK
-
-| File | Function | Description |
-|------|----------|-------------|
-| `main.c` | `main()` | Main loop: prompt, read input, process commands |
-| `main.c` | `get_input_line()` | Reads user input with getline |
-| `main.c` | `process_input()` | Tokenizes and executes commands |
-| `builtins.c` | `execute_builtin()` | Checks and executes built-in commands |
-| `builtins.c` | `builtin_exit()` | Handles exit command |
-| `builtins.c` | `builtin_env()` | Handles env command |
-| `path.c` | `get_cmd_fullpath()` | Resolves command path using PATH |
-| `tokenize.c` | `tokenize_string()` | Splits input into tokens |
-| `execute.c` | `execute_command()` | Forks and executes external commands |
-
-#### Input parsing
-The input is read with getline(), trimmed of its newline then split as chunks using spaces/tabs as boundaries.  
-No further process is applied.
-
-#### PATH Resolution
-
-The `get_cmd_fullpath()` function searches for executable commands in the system PATH environment variable.
-
-**Key concepts:**
-- `getenv()` - Retrieves PATH environment variable
-- `strtok()` - Splits PATH into individual directories
-- `stat()` or `access()` - Verifies file exists and is executable
-- Returns full path if found, `NULL` otherwise
-
-**Examples:**
-
-```c
-// Absolute path - returns immediately
-get_cmd_fullpath("/bin/ls", env)  → "/bin/ls" (if exists)
-
-// Relative path - returns immediately  
-get_cmd_fullpath("./hsh", env)    → "./hsh" (if exists)
-
-// Command name - searches PATH
-get_cmd_fullpath("ls", env)       → "/bin/ls" (found in /bin)
-
-// Invalid command
-get_cmd_fullpath("invalid", env)  → NULL (not found)
-```
-
-#### Command execution and exit
-Command is runned through a childprocess to isolate it, guaranteeing continuity of service for the shell.
-Each time a non builtin command is found and runned, its exit code is stored.
-When user decides to exit through shortcut or "exit" builtin command, it exits with that same code.
-This allows user to afterwards be able to read/retrieve that exit code in its "usual shell" with command `echo $?`.
 
 ## Testing
 
