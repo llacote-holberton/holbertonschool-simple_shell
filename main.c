@@ -65,10 +65,10 @@ int process_input(const char *received_input, char **envp,
 
 	builtin_success = execute_builtin(tokens, envp, &tokenized_string);
 
-	if (builtin_success < 0)  /* exit requested */
+	if (builtin_success)
 	{
 		free_token_variables(&tokenized_string, &tokens);
-		if (builtin_success < 0)
+		if (builtin_success < 0)   /* exit requested */
 			return (builtin_success);
 		else
 			return (0);
