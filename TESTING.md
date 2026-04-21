@@ -1,10 +1,27 @@
 # Testing
-This document holds details on how we define our plan to stress test our program against as many different (edge-)cases as possible to check that it behaved as intended in as many different situations as possible without either breaking or generating memory leaks.
+This document holds details on how we defined our plan to stress test our program against as many different (edge-)cases as possible to check that it behaved as intended in as many different situations as possible without either breaking or generating memory leaks.
 
-## Manual Testing
+Note that within this document we assume our shell has been compiled under the filename 'hsh' and user has it available in its current working directory.
 
-Use the test script to verify functionality:
+## Memory Leak Testing
+We made regular checks on potential memory leakages or ownership ambiguity by using the dedicated tool from the Valgrind testing suite.
 
+```bash
+# Interactive mode
+valgrind --leak-check=full --show-leak-kinds=all ./hsh
+# Then type commands and exit
+
+## Non-interactive mode
+echo "ls -latr /etc" | valgrind --leak-check=full --show-leak-kinds=all ./hsh
+```
+
+Expected result: **"All heap blocks were freed -- no leaks are possible"**
+
+## Behaviour testing
+Please note that although we tried to behave as closely as possible to "regular shells", our restricted set of features imply some difference in specific cases (for example in case of a permission problem we only show "not found" as for non-existent file).
+
+### First step: simple manual tests
+We started with simple isolated tests in non-interactive mode to help us develop features. Tests such as...
 ```bash
 # Test built-ins
 echo "exit" | ./hsh
@@ -19,20 +36,9 @@ echo "/bin/pwd" | ./hsh
 echo "nonexistent" | ./hsh
 echo "" | ./hsh
 ```
-
-## Memory Leak Testing
-
-Verify no memory leaks with Valgrind:
-
-```bash
-valgrind --leak-check=full --show-leak-kinds=all ./hsh
-# Then type commands and exit
-```
-
-Expected result: **"All heap blocks were freed -- no leaks are possible"**
-
-## Comparison with /bin/sh
-
+### Second step: comparing with a "professional shell"
+We used Bourne shell (aka "bash") as a reference for comparison as it is the one most widely installed on various GNU/Linux distributions.
+Making tests such as...
 ```bash
 # Test your shell
 echo "ls -l" | ./hsh > output_hsh.txt
@@ -44,9 +50,14 @@ echo "ls -l" | /bin/sh > output_sh.txt
 diff output_hsh.txt output_sh.txt
 ```
 
-## Automated Test Suite
+## Third step: simple automated Test Suite
 
-Create a file `test_shell.sh`:
+How to create a simple script running various use-cases?  
+Create a file `test_shell.sh` and fill it with following content (you can then adjust as you like):
+
+<details>
+<summary>(Click to view file content)</b></summary>
+
 
 ```bash
 #!/bin/bash
@@ -87,6 +98,8 @@ echo -e "ls\npwd\nexit" | ./hsh
 
 echo "===== TESTS COMPLETE ====="
 ```
+
+</details>
 
 Run with:
 ```bash
