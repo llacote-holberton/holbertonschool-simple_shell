@@ -229,6 +229,15 @@ This shell has been created in respect of the following directives.
 - Betty style guide contributors
 - All peer reviewers and testers
 
+## Project methodology
+To ensure we shared the vision and limit conflicts when pushing code we enforced a few simple rules throughout the duration.
+1. Starting with the Flowchart to understand the global architecture and identify potential challenges.
+2. As soon as starting to code, never push directly on dev but make a Pull Request from "personal branch", which had to be checked and approved by peer: this allowed fresh eyes to view code and detect potential flaws while also making reviewer understand and "learn" about peer's code naturally.
+3. Test Betty coding standard + compilation + behaviour before making a PR to limit the risk of pushing breaking changes.
+4. Reintegrate changes pushed onto dev inside personal branch as soon as made available to keep history as "single-lined" as possible and avoid creating conflicts down the road.
+
+We also used Github's tickets and Wiki scarcely, as we realized a few days in we didn't need it as our communication and collaboration workflow was working fine without them.
+
 ## Technologies Used
 
 <p align="left">
