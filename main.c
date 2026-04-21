@@ -22,6 +22,25 @@ static void get_input_line(char **received_input, size_t *received_size)
 }
 
 /**
+ * free_token_variables - Free tokenization related variables.
+ * @tokenized_string: pointer to modified string.
+ * @tokens: pointer to created array of pointers to string subparts.
+ */
+void free_token_variables(char **tokenized_string, char **tokens[])
+{
+	if (tokenized_string && *tokenized_string)
+	{
+		free(*tokenized_string);
+		*tokenized_string = NULL;
+	}
+	if (tokens && *tokens)
+	{
+		free(*tokens);
+		*tokens = NULL;
+	}
+}
+
+/**
  * process_input - Processes a command
  * @received_input: Command string
  * @envp: Environment variables
@@ -31,7 +50,7 @@ static void get_input_line(char **received_input, size_t *received_size)
  * Return: Exit code (negative = exit requested)
  */
 int process_input(const char *received_input, char **envp,
-                 char *shell_name, int line_number)
+									char *shell_name, int line_number)
 {
 	char **tokens = NULL;
 	char *command_fullpath = NULL;
@@ -45,27 +64,17 @@ int process_input(const char *received_input, char **envp,
 		return (0);
 
 	builtin_success = execute_builtin(tokens, envp, &tokenized_string);
-	
+
 	if (builtin_success < 0)  /* exit requested */
 	{
-		if (tokenized_string)
-			free(tokenized_string);
-		if (tokens)
-			free(tokens);
-		return (builtin_success);  /* Propagate exit code */
-	}
-	
-	if (builtin_success)
-	{
-		if (tokenized_string)
-			free(tokenized_string);
-		if (tokens)
-			free(tokens);
-		return (0);
+		free_token_variables(&tokenized_string, &tokens);
+		if (builtin_success < 0)
+			return (builtin_success);
+		else
+			return (0);
 	}
 
 	command_fullpath = get_cmd_fullpath(tokens[0], envp);
-
 	if (command_fullpath)
 	{
 		command_exit_code = execute_command(command_fullpath, tokens, envp);
@@ -78,11 +87,7 @@ int process_input(const char *received_input, char **envp,
 			shell_name, line_number, tokens[0]);
 	}
 
-	if (tokenized_string)
-		free(tokenized_string);
-	if (tokens)
-		free(tokens);
-
+	free_token_variables(&tokenized_string, &tokens);
 	return (command_exit_code);
 }
 
@@ -124,7 +129,7 @@ int main(int argc, char **argv, char **envp)
 		{
 			line_number++;
 			process_return = process_input(received_input, envp, argv[0], line_number);
-			
+
 			if (process_return < 0)  /* exit requested */
 			{
 				free(received_input);
