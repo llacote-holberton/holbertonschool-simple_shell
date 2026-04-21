@@ -56,14 +56,14 @@ int process_input(const char *received_input, char **envp,
 	char *command_fullpath = NULL;
 	char *tokenized_string = NULL;
 	int builtin_success;
-	int command_exit_code = 0;
+	static int command_exit_code;
 
 	tokens = tokenize_string(received_input, NULL, &tokenized_string);
 
 	if (!tokens)
 		return (0);
 
-	builtin_success = execute_builtin(tokens, envp, &tokenized_string);
+	builtin_success = execute_builtin(envp, tokens, command_exit_code);
 
 	if (builtin_success)
 	{
@@ -129,11 +129,11 @@ int main(int argc, char **argv, char **envp)
 		{
 			line_number++;
 			process_return = process_input(received_input, envp, argv[0], line_number);
-
 			if (process_return < 0)  /* exit requested */
 			{
 				free(received_input);
-				exit(-1 - process_return);  /* Decode: -1=-1-0, -2=-1-1, etc */
+				/* "Decodes" the exit code by making it positive */
+				exit(-1 - process_return);
 			}
 		}
 	}

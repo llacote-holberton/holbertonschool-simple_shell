@@ -28,6 +28,5 @@ char *get_cmd_fullpath(char *command, char **envp);
 char *_getenv(const char *name, char **envp);
 
 /* === PROTOTYPES - builtins.c === */
-int execute_builtin(char **args, char **envp, char **line);
-
+int execute_builtin(char **envp, char **args, int last_cmd_exit_code);
 #endif

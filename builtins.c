@@ -2,17 +2,16 @@
 
 /**
  * builtin_exit - Signals shell should exit
- * @args: Array of command arguments
- * @line: Input line (unused here)
+ * @last_cmd_exit_code: exit code of last non-built-in runned.
  *
  * Return: -1 to signal exit
  */
-int builtin_exit(char **args, char **line)
+int builtin_exit(int last_cmd_exit_code)
 {
-	(void)args;
-	(void)line;
-
-	return (-1);  /* Signal exit with code 0 */
+	/* We want to propagate the previously runned exit */
+	/* AND signal to "main" that we want to end the program. */
+	/* THUS using a "negative encode/decode" dual-step process. */
+	return (-1 - last_cmd_exit_code);
 }
 
 /**
@@ -38,11 +37,11 @@ void builtin_env(char **envp)
  * execute_builtin - Executes a builtin if recognized
  * @args: Array of command arguments
  * @envp: Environment variables
- * @line: Complete line to free if exit is called
+ * @last_cmd_exit_code: exit code of last non-built-in runned.
  *
  * Return: 1 if builtin executed, <0 if exit, 0 otherwise
  */
-int execute_builtin(char **args, char **envp, char **line)
+int execute_builtin(char **envp, char **args,	int last_cmd_exit_code)
 {
 	int result;
 
@@ -51,7 +50,7 @@ int execute_builtin(char **args, char **envp, char **line)
 
 	if (strcmp(args[0], "exit") == 0)
 	{
-		result = builtin_exit(args, line);
+		result = builtin_exit(last_cmd_exit_code);
 		return (result);
 	}
 
