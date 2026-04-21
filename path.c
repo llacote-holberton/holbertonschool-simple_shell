@@ -10,7 +10,11 @@ static char *check_direct_path(char *command)
 {
 	struct stat st;
 
-	if (command[0] == '/' || (command[0] == '.' && command[1] == '/'))
+	/* @note: useless BECAUSE a) internal func + guard in "public" caller. */
+	/* if (!command || command[0] == '\0') return (NULL); */
+
+	/* @note: adding && command[1] == '/' makes code miss ../ or hidden files. */
+	if (command[0] == '/' || command[0] == '.')
 	{
 		if (stat(command, &st) == 0 &&
 		    S_ISREG(st.st_mode) &&
@@ -89,12 +93,15 @@ char *get_cmd_fullpath(char *command, char **envp)
 {
 	char *path_env, *path_copy, *result;
 
+	if (!command || command[0] == '\0')
+		return (NULL);
+
 	result = check_direct_path(command);
 	if (result)
 		return (result);
 
 	path_env = _getenv("PATH", envp);
-	if (!path_env)
+	if (!path_env || path_env[0] == '\0')
 		return (NULL);
 
 	path_copy = strdup(path_env);
