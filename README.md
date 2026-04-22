@@ -52,10 +52,6 @@ Once compiled (e.g. as an executable file shs.out) you can manually run it (conf
 Alternatively, you can "pipe" command(s) into it to have it execute them immediately and stop automatically afterwards.
 For examples of use in Interactive and Non-Interactive mode, please go to [Examples of use](#examples-of-use)
 
-### Quick tutorial demo
-FIXME
-
-
 ## Features and limitations
 
 As this was a short-timed and severely constrained project tailored for pedagogy first, it is simple by design.
