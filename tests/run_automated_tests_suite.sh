@@ -14,18 +14,22 @@ echo "----- All comparison will be 'custom first', official second -----"
 echo "----- Tests based on assumption Bash and all core utils are installed. -----"
 
 # Centralized function to avoid useless repeat of "display wrapper"
-# Argument 1 : Test title and description
-# Argument 2 : Command(s) to inject
+# Argument 1: Test title and description
+# Argument 2: Command(s) to inject (should have prefixed value if 3rd arg present)
+# Argument 3: Optional "variant command" for tests altering data (like mkdir).
 run_test() {
     local title="$1"
-    local cmd="$2"
+    local cmd_hbt="$2"
+    # Using "non-existant fallback" to keep retrocompatibility.
+    # -> Only tests requiring "variants" have to be modified to use 3rd arg.
+    local cmd_std="${3:-$2}"
 
     printf "\n\n----------------------------\n"
     echo "$title"
     echo "     -----     "
-    echo -e "$cmd" | $HBT_SHELL
+    echo -e "$cmd_hbt" | $HBT_SHELL
     echo "     -----     "
-    echo -e "$cmd" | $STD_SHELL
+    echo -e "$cmd_std" | $STD_SHELL
     echo "----------------------------"
 }
 
@@ -39,3 +43,5 @@ for test_file in ./0[0-9]_*.sh; do
         source "$test_file"
     fi
 done
+
+echo "===== END OF AUTOMATED TESTS ====="

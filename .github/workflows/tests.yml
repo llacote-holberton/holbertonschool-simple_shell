@@ -31,8 +31,8 @@ jobs:
     # Étape D : Rendre le script de test exécutable et le lancer
     - name: Run automated tests
       run: |
-        chmod +x ./tests/simple_automated_tests.sh
-        ./tests/simple_automated_tests.sh
+        chmod +x ./tests/run_automated_tests_suite.sh
+        ./tests/run_automated_tests_suite.sh
 
     # Étape E (Bonus) : Lancer Valgrind de façon non-interactive pour vérifier les fuites de mémoire
     - name: Run Memory Leak Check
