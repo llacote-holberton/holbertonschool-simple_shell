@@ -106,3 +106,16 @@ Run with:
 chmod +x test_shell.sh
 ./test_shell.sh
 ```
+
+## Fourth step: creating a full test suite
+Although this is probably not yet an exhaustive list of tests, and very crude in presentation, we created a script covering several dozen of simple test cases, including some for features our shell doesn't support (yet).
+
+This comes accompanied with "prepared" folder and files which are required for some tests to be runned correctly.
+You can start it with this command line.
+`cd ./tests && ./simple_automated_tests.sh`
+
+IMPORTANT: if you try to call our script from somewhere else it will break as the path and name to the executable is "hardcoded" and expects it to be at project root, named ./hsh.out
+If you wish to proceed then please open that script file with any text editor and adjust the following line accordingly. 
+`HBT_SHELL="../hsh.out"`
+
+Similarly, our test suite expects Bourne shell to be installed. If you wish to use another please modify the line `STD_SHELL="/bin/bash"`.

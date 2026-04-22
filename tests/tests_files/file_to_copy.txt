@@ -1,0 +1,2 @@
+Hello.
+This is a file to copy in tempfolder to check commands are working fine.
