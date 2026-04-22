@@ -192,10 +192,13 @@ We take robustness and memory management seriously. Code has been examined with 
 
 For detailed instructions on how to run our manual and automated test suites, please refer to our [Testing Guide](./TESTING.md).
 
-## Project constraints
+## Project constraints and methodology
+
+### Imposed constraints
+
 This shell has been created in respect of the following directives.
 
-### Allowed Functions and System Calls
+#### Allowed Functions and System Calls
 
 - **String functions:** `strlen`, `strcpy`, `strcat`, `strcmp`, `strdup`, `strtok`
 - **I/O:** `printf`, `fprintf`, `putchar`, `getline`, `perror`
@@ -206,7 +209,7 @@ This shell has been created in respect of the following directives.
 - **Environment:** `getenv`, `isatty`, `getpid`
 - **Other:** `signal`, `kill`, `fflush`
 
-### Requirements
+#### Requirements
 
 - All code compiled with: `gcc -Wall -Werror -Wextra -pedantic -std=gnu89`
 - Betty style compliant
@@ -214,18 +217,7 @@ This shell has been created in respect of the following directives.
 - Maximum 5 functions per file
 - All header files include guarded
 
-## Authors
-
-- **Soufiane Filali** - [GitHub](https://github.com/soufiane-filali)
-- **Laurent Lacôte** - [GitHub](https://github.com/llacote-holberton)
-
-## Acknowledgments
-
-- Holberton School for the project guidelines
-- Betty style guide contributors
-- All peer reviewers and testers
-
-## Project methodology
+### Project methodology
 To ensure we shared the vision and limit conflicts when pushing code we enforced a few simple rules throughout the duration.
 1. Starting with the Flowchart to understand the global architecture and identify potential challenges.
 2. As soon as starting to code, never push directly on dev but make a Pull Request from "personal branch", which had to be checked and approved by peer: this allowed fresh eyes to view code and detect potential flaws while also making reviewer understand and "learn" about peer's code naturally.
@@ -233,6 +225,14 @@ To ensure we shared the vision and limit conflicts when pushing code we enforced
 4. Reintegrate changes pushed onto dev inside personal branch as soon as made available to keep history as "single-lined" as possible and avoid creating conflicts down the road.
 
 We also used Github's tickets and Wiki scarcely, as we realized a few days in we didn't need it as our communication and collaboration workflow was working fine without them.
+
+Beyond Git and Visual Studio Code / Kate as our main tools for code writing and sharing, we occasionally used online collaboration and testing tools for brainstorms, https://codeshare.io/ and https://www.onlinegdb.com/online_c_compiler respectively.
+
+### Acknowledgments
+
+- Holberton School for the project guidelines
+- Betty style guide contributors
+- All peer reviewers and testers
 
 ## Technologies Used
 
@@ -245,8 +245,14 @@ We also used Github's tickets and Wiki scarcely, as we realized a few days in we
     <img src="https://img.shields.io/badge/KDE-blue?logo=kde&logoColor=white&style=for-the-badge" alt="KDE badge">
 </p>
 
+
+## Authors
+
+- **Soufiane Filali** - [GitHub](https://github.com/soufiane-filali)
+- **Laurent Lacôte** - [GitHub](https://github.com/llacote-holberton)
+
 ## License
 
-This project is part of the Holberton School curriculum. All rights reserved.
+This project is part of the Holberton School curriculum and is made available under the General Public License v3.0, confer [License text](./LICENSE.md) for details.
 
 ---
