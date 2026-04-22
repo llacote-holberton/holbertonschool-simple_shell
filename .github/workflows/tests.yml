@@ -1,0 +1,40 @@
+name: Simple Shell CI
+
+# 1. Quand est-ce que ce script se déclenche ?
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+# 2. Que doit-il faire ?
+jobs:
+  build-and-test:
+    # On demande à GitHub de nous prêter un serveur Ubuntu (Linux) tout neuf
+    runs-on: ubuntu-latest
+
+    steps:
+    # Étape A : Récupérer le code de ton dépôt
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Étape B : Installer Valgrind et GCC (GCC est souvent déjà là, mais on s'assure d'avoir tout)
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc valgrind
+
+    # Étape C : Compiler le projet avec vos flags stricts
+    - name: Compile the shell
+      run: gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh.out
+
+    # Étape D : Rendre le script de test exécutable et le lancer
+    - name: Run automated tests
+      run: |
+        chmod +x ./tests/simple_automated_tests.sh
+        ./tests/simple_automated_tests.sh
+
+    # Étape E (Bonus) : Lancer Valgrind de façon non-interactive pour vérifier les fuites de mémoire
+    - name: Run Memory Leak Check
+      run: |
+        echo "exit" | valgrind --leak-check=full --error-exitcode=1 ./hsh.out
