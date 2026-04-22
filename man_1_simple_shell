@@ -6,14 +6,11 @@ hsh \- simple UNIX command line interpreter
 .SH SYNOPSIS
 .B hsh
 .br
-.B echo
-.I "command"
-|
-.B hsh
+[ \fBcommand_string\fR | ] \fBhsh\fR
 
 .SH DESCRIPTION
 .B hsh
-is a simple UNIX command-line interpreter that reads commands from standard input or from a file and executes them.
+is a simple UNIX command-line interpreter that reads commands from standard input and executes them. It operates in both interactive and non-interactive modes, making it suitable for direct user interaction or piped command sequences.
 
 .SH USAGE
 
@@ -22,112 +19,138 @@ In interactive mode,
 .B hsh
 displays a prompt ("$ ") and waits for the user to type a command. After executing the command, the prompt is displayed again.
 
+The user can exit the shell cleanly by typing the built-in command \fBexit\fR or by pressing \fBCtrl+D\fR (End Of File).
+
 .SS Non-Interactive Mode
 In non-interactive mode,
 .B hsh
-reads commands from standard input (via pipe or redirection), executes them, and exits when all commands are processed.
+reads commands from standard input (via pipe or redirection), executes them sequentially, and exits automatically when the End Of File is reached.
 
 .SH COMMAND EXECUTION
 
 .B hsh
 executes commands in the following order:
 
-.IP 1. 4
-Checks if the command is a built-in (exit, env)
-.IP 2. 4
+.IP 1.
+Checks if the command is a built-in (exit, env).
+
+.IP 2. 
 If not a built-in, searches for the command:
 .RS
-.IP \(bu 2
-If the command contains '/' (absolute or relative path), uses it directly
-.IP \(bu 2
-Otherwise, searches for the command in directories listed in the PATH environment variable
+.IP \(bu 2.1
+If the command contains a '/' (absolute or relative path), it uses it directly.
+
+.IP \(bu 2.2
+Otherwise, it searches for the command in the directories listed in the PATH environment variable.
 .RE
-.IP 3. 4
-If found, executes the command in a child process using fork() and execve()
-.IP 4. 4
-Waits for the command to complete before returning to the prompt
+.IP 3.
+If found, executes the command in an isolated child process using fork() and execve().
+
+.IP 4.
+Waits for the command to complete and retrieves its exit status before returning to the prompt.
 
 .SH BUILT-IN COMMANDS
 
 .TP
 .B exit
-Exits the shell.
+Exits the shell. If no arguments are provided, it terminates using the exit status of the last executed command.
 .TP
+
 .B env
-Prints all environment variables.
+Prints all environment variables currently accessible to the shell.
 
-.SH RETURN VALUE
-.B hsh
-returns the exit status of the last executed command.
-
-.SH ENVIRONMENT
+.SH ENVIRONMENT VARIABLES
 .TP
 .B PATH
 List of directories to search for executable commands, separated by colons (:).
+.TP
+
+.B PWD
+The current working directory (inherited from the parent process, not dynamically updated in v1).
+
+.SH EXIT STATUS
+.B hsh
+returns the exit status of the last executed command. 
+.br
+If no command was executed, it exits with status 0. If a command is not found, the shell propagates an error status (typically 127, or 1 depending on internal handling).
+
+.SH ERROR MESSAGES
+When a command is not found/executable for any reason 
+  (inexistant, not accessible, not an executable),
+.B hsh
+prints an error message to stderr in the following format:
+.PP
+.I ./hsh: 1: command: not found
+.PP
+Where
+.I ./hsh
+is the name of the shell (extracted from argv[0]),
+.I 1
+is the nth non-empty line read and
+.I command
+is the name of the command that failed to resolve.
 
 .SH EXAMPLES
 
 .SS Interactive Mode
 .nf
 $ ./hsh
+
 $ ls -l
+
 total 100
 -rw-r--r-- 1 user user 1234 Apr 19 10:00 main.c
+
 $ pwd
+
 /home/user/simple_shell
+
 $ exit
 .fi
+
 
 .SS Non-Interactive Mode
 .nf
 $ echo "ls" | ./hsh
+
 main.c shell.c hsh
 
 $ echo -e "pwd\\nls\\nexit" | ./hsh
+
 /home/user/simple_shell
+
 main.c shell.c hsh
 .fi
 
-.SH ERROR MESSAGES
-When a command is not found,
-.B hsh
-prints an error message to stderr in the format:
-.PP
-.I ./hsh: 1: command: not found
-.PP
-Where
-.I ./hsh
-is the name of the shell (from argv[0]),
-.I 1
-is the line number, and
-.I command
-is the name of the command that was not found.
-
-.SH EXIT STATUS
-.B hsh
-returns 0 on success and 1 on error.
-
-.SH FILES
-None.
-
 .SH BUGS
-No known bugs.
+No memory leaks known (verified via Valgrind).
+
 .PP
-The following features are not implemented:
-.IP \(bu 2
+As this is a v1 pedagogical project, the following standard shell features are strictly NOT implemented by design:
+
+.IP "1." 3
 Command separators (;, &&, ||)
-.IP \(bu 2
-Pipes (|)
-.IP \(bu 2
+
+.IP "2." 3
+Pipes (|) between internal commands
+
+.IP "3." 3
 Redirections (>, <, >>)
-.IP \(bu 2
-Wildcards (*, ?)
-.IP \(bu 2
+
+.IP "4." 3
+Globbing and Wildcards (*, ?)
+
+.IP "5." 3
 Variable expansion ($VAR)
-.IP \(bu 2
-Quotes handling
-.IP \(bu 2
+
+.IP "6." 3
+Quotes handling for arguments with spaces
+
+.IP "7." 3
 Comments (#)
+
+.IP "8." 3
+Directory navigation (cd)
 
 .SH AUTHORS
 Soufiane Filali, Laurent Lacôte
